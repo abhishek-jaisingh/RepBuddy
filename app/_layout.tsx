@@ -15,10 +15,10 @@ const theme = {
   colors: {
     ...DarkTheme.colors,
     background: Colors.bg,
-    card: Colors.card,
+    card: Colors.bg,
     text: Colors.text,
     border: Colors.cardBorder,
-    primary: Colors.accent,
+    primary: Colors.primary,
   },
 };
 
@@ -40,19 +40,36 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={theme}>
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: Colors.bg },
+          headerTintColor: Colors.text,
+          headerTitleStyle: { fontWeight: '700' },
+          contentStyle: { backgroundColor: Colors.bg },
+        }}
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="workout/active"
-          options={{ title: 'Workout', headerBackTitle: 'Back' }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="routine/create"
-          options={{ title: 'New Routine', presentation: 'modal' }}
+          options={{
+            title: 'Create New Routine',
+            presentation: 'modal',
+            headerStyle: { backgroundColor: Colors.bg },
+            headerTintColor: Colors.primary,
+          }}
         />
         <Stack.Screen
           name="routine/[id]"
-          options={{ title: 'Edit Routine', headerBackTitle: 'Back' }}
+          options={{
+            title: 'Edit Routine',
+            headerBackTitle: 'Back',
+            headerStyle: { backgroundColor: Colors.bg },
+            headerTintColor: Colors.primary,
+          }}
         />
       </Stack>
     </ThemeProvider>

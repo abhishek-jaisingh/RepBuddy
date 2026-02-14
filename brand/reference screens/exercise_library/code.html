@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RepBuddy Exercise Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a6f20d",
+                        "background-light": "#f7f8f5",
+                        "background-dark": "#1c2210",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Header & Search (Sticky) -->
+<header class="sticky top-0 z-20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10">
+<div class="flex items-center p-4 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary flex size-10 items-center justify-center rounded-lg bg-primary/10">
+<span class="material-symbols-outlined">fitness_center</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">Exercise Library</h1>
+</div>
+<button class="text-primary p-2">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="px-4 pb-3">
+<label class="relative flex items-center w-full">
+<span class="material-symbols-outlined absolute left-4 text-slate-400 dark:text-primary/60">search</span>
+<input class="w-full bg-slate-200/50 dark:bg-primary/5 border-none focus:ring-2 focus:ring-primary rounded-xl py-3 pl-12 pr-4 placeholder:text-slate-400 dark:placeholder:text-primary/30 text-base" placeholder="Search exercises..." type="text"/>
+</label>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 px-4 pb-4 overflow-x-auto hide-scrollbar">
+<button class="shrink-0 px-5 py-2 rounded-full bg-primary text-background-dark font-semibold text-sm">All</button>
+<button class="shrink-0 px-5 py-2 rounded-full bg-slate-200 dark:bg-primary/10 text-slate-700 dark:text-primary/80 font-medium text-sm border border-transparent hover:border-primary/30 transition-colors">Chest</button>
+<button class="shrink-0 px-5 py-2 rounded-full bg-slate-200 dark:bg-primary/10 text-slate-700 dark:text-primary/80 font-medium text-sm border border-transparent hover:border-primary/30 transition-colors">Back</button>
+<button class="shrink-0 px-5 py-2 rounded-full bg-slate-200 dark:bg-primary/10 text-slate-700 dark:text-primary/80 font-medium text-sm border border-transparent hover:border-primary/30 transition-colors">Legs</button>
+<button class="shrink-0 px-5 py-2 rounded-full bg-slate-200 dark:bg-primary/10 text-slate-700 dark:text-primary/80 font-medium text-sm border border-transparent hover:border-primary/30 transition-colors">Shoulders</button>
+<button class="shrink-0 px-5 py-2 rounded-full bg-slate-200 dark:bg-primary/10 text-slate-700 dark:text-primary/80 font-medium text-sm border border-transparent hover:border-primary/30 transition-colors">Arms</button>
+</div>
+</header>
+<!-- Exercise List -->
+<main class="flex-1 px-4 py-2 space-y-3 pb-24">
+<!-- Section: Popular -->
+<h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-primary/40 px-1 pt-2">Recommended</h3>
+<!-- Exercise Item -->
+<div class="group flex items-center justify-between p-4 bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 rounded-xl hover:border-primary/40 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">exercise</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Bench Press</h4>
+<p class="text-sm text-slate-500 dark:text-primary/60">Equipment: Barbell</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-primary/40 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<div class="group flex items-center justify-between p-4 bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 rounded-xl hover:border-primary/40 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">fitness_center</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Lat Pulldown</h4>
+<p class="text-sm text-slate-500 dark:text-primary/60">Equipment: Cable Machine</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-primary/40 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<div class="group flex items-center justify-between p-4 bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 rounded-xl hover:border-primary/40 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">accessibility_new</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Back Squat</h4>
+<p class="text-sm text-slate-500 dark:text-primary/60">Equipment: Barbell</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-primary/40 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-primary/40 px-1 pt-4">All Exercises</h3>
+<div class="group flex items-center justify-between p-4 bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 rounded-xl hover:border-primary/40 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">sports_gymnastics</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Dumbbell Fly</h4>
+<p class="text-sm text-slate-500 dark:text-primary/60">Equipment: Dumbbells</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-primary/40 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<div class="group flex items-center justify-between p-4 bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 rounded-xl hover:border-primary/40 transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">handyman</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Romanian Deadlift</h4>
+<p class="text-sm text-slate-500 dark:text-primary/60">Equipment: Barbell</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-primary/40 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Add Custom Button -->
+<div class="py-4">
+<button class="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-dashed border-slate-300 dark:border-primary/20 text-slate-500 dark:text-primary/60 hover:border-primary hover:text-primary transition-all font-medium">
+<span class="material-symbols-outlined">add_circle</span>
+                Add Custom Exercise
+            </button>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 size-14 rounded-full bg-primary text-background-dark shadow-lg shadow-primary/20 flex items-center justify-center z-30 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-3xl font-bold">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full bg-white dark:bg-[#23271b] border-t border-slate-200 dark:border-[#333928] pb-6 pt-2 z-40">
+<div class="flex justify-around items-end">
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-[#b0ba9c]" href="#">
+<span class="material-symbols-outlined">exercise</span>
+<p class="text-[10px] font-medium uppercase tracking-wider">Workout</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">format_list_bulleted</span>
+<p class="text-[10px] font-medium uppercase tracking-wider">Library</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-[#b0ba9c]" href="#">
+<span class="material-symbols-outlined">history</span>
+<p class="text-[10px] font-medium uppercase tracking-wider">History</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-[#b0ba9c]" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-medium uppercase tracking-wider">Profile</p>
+</a>
+</div>
+</nav>
+</body></html>

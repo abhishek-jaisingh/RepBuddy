@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RepBuddy - Active Workout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a6f20d",
+                        "background-light": "#f7f8f5",
+                        "background-dark": "#12140e",
+                        "surface-dark": "#1c2210",
+                        "border-dark": "#2d351d",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2d351d;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-border-dark px-4 py-3">
+<div class="flex items-center justify-between max-w-2xl mx-auto w-full">
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div>
+<h1 class="text-lg font-bold leading-tight">Push Day</h1>
+<p class="text-xs text-slate-500 dark:text-primary/70 font-medium">Chest, Shoulders, Triceps</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xl font-extrabold tabular-nums tracking-tight text-primary">00:45:12</span>
+<span class="text-[10px] uppercase tracking-widest font-bold opacity-50">Elapsed</span>
+</div>
+</div>
+</header>
+<main class="flex-1 w-full max-w-2xl mx-auto p-4 flex flex-col gap-6">
+<!-- Exercise Focus Card -->
+<section class="bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-slate-200 dark:border-border-dark overflow-hidden relative">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h2 class="text-2xl font-extrabold tracking-tight">Bench Press</h2>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-sm font-medium text-slate-500 dark:text-primary/60">Previous Best: 225 lbs x 5</span>
+<span class="size-1 rounded-full bg-slate-400"></span>
+<span class="text-sm font-medium text-slate-500">Rest: 90s</span>
+</div>
+</div>
+<button class="p-2 bg-primary/10 text-primary rounded-lg">
+<span class="material-symbols-outlined text-lg">videocam</span>
+</button>
+</div>
+<!-- Set Table -->
+<div class="space-y-2">
+<!-- Header -->
+<div class="grid grid-cols-5 text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 px-2">
+<div class="text-center">Set</div>
+<div class="col-span-2 text-center">LBS</div>
+<div class="text-center">Reps</div>
+<div class="text-right">Done</div>
+</div>
+<!-- Row 1 (Completed) -->
+<div class="grid grid-cols-5 items-center bg-slate-50 dark:bg-background-dark/50 rounded-lg p-3 border border-transparent">
+<div class="text-center font-bold text-slate-400">1</div>
+<div class="col-span-2 text-center font-bold text-lg">225</div>
+<div class="text-center font-bold text-lg">5</div>
+<div class="flex justify-end">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined font-bold">check</span>
+</div>
+</div>
+</div>
+<!-- Row 2 (Active/Focus) -->
+<div class="grid grid-cols-5 items-center bg-white dark:bg-surface-dark rounded-lg p-3 border-2 border-primary shadow-[0_0_15px_rgba(166,242,13,0.15)] ring-1 ring-primary/20">
+<div class="text-center font-bold text-primary">2</div>
+<div class="col-span-2 text-center font-black text-2xl tracking-tight italic">225</div>
+<div class="text-center font-black text-2xl tracking-tight italic">--</div>
+<div class="flex justify-end">
+<div class="size-8 border-2 border-slate-300 dark:border-border-dark rounded-lg flex items-center justify-center">
+<!-- Empty for active -->
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 py-3 border-2 border-dashed border-slate-200 dark:border-border-dark rounded-xl text-slate-400 dark:text-slate-500 font-bold hover:bg-slate-50 dark:hover:bg-background-dark transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                Add Set
+            </button>
+</section>
+<!-- Tap Logging Controls -->
+<section class="mt-auto grid grid-cols-2 gap-4">
+<!-- Weight Control -->
+<div class="space-y-3">
+<p class="text-[10px] uppercase font-black tracking-widest text-center opacity-50">Adjust Weight</p>
+<div class="flex items-center justify-between bg-white dark:bg-surface-dark rounded-xl p-1 border border-slate-200 dark:border-border-dark shadow-sm">
+<button class="size-14 bg-slate-100 dark:bg-background-dark rounded-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<span class="text-xl font-black">225</span>
+<button class="size-14 bg-slate-100 dark:bg-background-dark rounded-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Reps Control -->
+<div class="space-y-3">
+<p class="text-[10px] uppercase font-black tracking-widest text-center opacity-50">Adjust Reps</p>
+<div class="flex items-center justify-between bg-white dark:bg-surface-dark rounded-xl p-1 border border-slate-200 dark:border-border-dark shadow-sm">
+<button class="size-14 bg-slate-100 dark:bg-background-dark rounded-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<span class="text-xl font-black">5</span>
+<button class="size-14 bg-slate-100 dark:bg-background-dark rounded-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Fast Tap Keypad (Simplified for logging) -->
+<section class="grid grid-cols-3 gap-2">
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">1</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">2</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">3</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">4</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">5</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">6</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">7</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">8</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">9</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">.</button>
+<button class="h-14 bg-white dark:bg-surface-dark rounded-xl font-bold border border-slate-200 dark:border-border-dark active:bg-primary/20 transition-colors">0</button>
+<button class="h-14 bg-slate-200 dark:bg-border-dark rounded-xl font-bold flex items-center justify-center">
+<span class="material-symbols-outlined">backspace</span>
+</button>
+</section>
+</main>
+<!-- Fixed Bottom Actions -->
+<footer class="sticky bottom-0 bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-border-dark p-4 pb-8">
+<div class="max-w-2xl mx-auto flex gap-4">
+<button class="flex-1 py-4 bg-slate-200 dark:bg-surface-dark rounded-xl font-bold text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-border-dark transition-colors">
+                NEXT EXERCISE
+            </button>
+<button class="flex-[1.5] py-4 bg-primary text-background-dark rounded-xl font-black italic tracking-tighter text-lg shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+                FINISH WORKOUT
+            </button>
+</div>
+</footer>
+</body></html>

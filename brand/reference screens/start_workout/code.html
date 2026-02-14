@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RepBuddy - Start Workout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a6f20d",
+                        "background-light": "#f7f8f5",
+                        "background-dark": "#121212",
+                        "surface-dark": "#1e1e1e",
+                        "neutral-dark": "#2a2a2a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex flex-col">
+<!-- Header -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 pt-6 pb-2">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Profile picture of an athletic person" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPAYrfm8vbAuaNZGZWgfZuOz3L3uPMACO5AqbMEg-SFyqjySMx9LW2s_QCCvmTCHlVrG9WTzMCQDmIJvohZtH2ieMa3VRsOAW_XHbQ2AnNc3XyOiHCvBFw18rskXh2hE55qQasS1VaC49TaV5VX9eL3Fa74eKV20GzpXGLS8_zrAiAcfLBnAD6OjsfC9fvyPJ7f925XOM2FqkYr1kVB1NnIwNlLbeZyCttcSVZTsUg88KORn7MKAS0fL60wQQrrPz3YyKSrbBPoPvr"/>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight">Start Workout</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">Ready for your session?</p>
+</div>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-slate-100 dark:bg-surface-dark border-none rounded-xl py-3 pl-11 pr-4 text-sm focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-500" placeholder="Search routines..." type="text"/>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-4 py-4 space-y-4">
+<div class="flex items-center justify-between px-1">
+<h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">My Routines</h2>
+<button class="text-xs font-bold text-primary flex items-center gap-1">
+                VIEW ALL <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<!-- Routine List -->
+<div class="space-y-3 pb-24">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-white/5 shadow-sm hover:border-primary/50 transition-colors group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Last done: 2 days ago</p>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">Upper Body Power</h3>
+</div>
+<button class="text-slate-400"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+<div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mb-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">exercise</span>
+<span>6 Exercises</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>45 min</span>
+</div>
+</div>
+<button class="w-full bg-slate-100 dark:bg-neutral-dark hover:bg-primary hover:text-black dark:hover:bg-primary py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg active-icon">play_arrow</span>
+                    START ROUTINE
+                </button>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-white/5 shadow-sm hover:border-primary/50 transition-colors group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Last done: 5 days ago</p>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">Leg Day (A)</h3>
+</div>
+<button class="text-slate-400"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+<div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mb-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">exercise</span>
+<span>5 Exercises</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>55 min</span>
+</div>
+</div>
+<button class="w-full bg-slate-100 dark:bg-neutral-dark hover:bg-primary hover:text-black dark:hover:bg-primary py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg active-icon">play_arrow</span>
+                    START ROUTINE
+                </button>
+</div>
+<!-- Card 3 -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-white/5 shadow-sm hover:border-primary/50 transition-colors group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Never started</p>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">Core &amp; HIIT</h3>
+</div>
+<button class="text-slate-400"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+<div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mb-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">exercise</span>
+<span>8 Exercises</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>30 min</span>
+</div>
+</div>
+<button class="w-full bg-slate-100 dark:bg-neutral-dark hover:bg-primary hover:text-black dark:hover:bg-primary py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg active-icon">play_arrow</span>
+                    START ROUTINE
+                </button>
+</div>
+<!-- Card 4 (Small Minimal) -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-white/5 shadow-sm hover:border-primary/50 transition-colors group relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-center">
+<div class="space-y-1">
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">Push Day</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400">6 Exercises | 1h 05m</p>
+</div>
+<button class="w-10 h-10 bg-primary text-black rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined active-icon">play_arrow</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed right-6 bottom-24 w-16 h-16 bg-primary text-black rounded-full shadow-[0_8px_30px_rgb(166,242,13,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-20">
+<span class="material-symbols-outlined text-3xl font-bold">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/5 px-6 py-3 pb-6 flex items-center justify-between z-30">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium uppercase tracking-wider">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined active-icon">fitness_center</span>
+<span class="text-[10px] font-medium uppercase tracking-wider">Workout</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] font-medium uppercase tracking-wider">History</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium uppercase tracking-wider">Profile</span>
+</a>
+</nav>
+</body></html>

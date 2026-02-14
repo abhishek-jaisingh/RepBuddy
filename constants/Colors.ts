@@ -1,17 +1,30 @@
 export default {
-  bg: '#0a0a0a',
-  card: '#161616',
-  cardBorder: '#2a2a2a',
-  accent: '#ff4d4d',
-  accentLight: '#ff6b6b',
-  blue: '#4da8ff',
+  // Core
+  primary: '#a6f20d',
+  primaryDim: 'rgba(166, 242, 13, 0.10)',
+  primaryBorder: 'rgba(166, 242, 13, 0.30)',
+  bg: '#121212',
+  bgLight: '#1a1a1a',
+
+  // Cards
+  card: 'rgba(255,255,255,0.05)',
+  cardBorder: 'rgba(255,255,255,0.08)',
+  cardHighlight: 'rgba(255,255,255,0.10)',
+
+  // Text
   text: '#ffffff',
-  textSecondary: '#999',
-  textMuted: '#555',
-  success: '#34d399',
-  danger: '#ef4444',
-  tabBar: '#111111',
-  tabBarBorder: '#222',
-  inputBg: '#1a1a1a',
-  inputBorder: '#333',
+  textSecondary: 'rgba(255,255,255,0.50)',
+  textMuted: 'rgba(255,255,255,0.25)',
+
+  // Inputs
+  inputBg: 'rgba(255,255,255,0.05)',
+  inputBorder: 'rgba(255,255,255,0.10)',
+
+  // Status
+  success: '#0bda2a',
+  danger: '#ff4444',
+
+  // Tab bar
+  tabBar: 'rgba(18,18,18,0.92)',
+  tabBarBorder: 'rgba(255,255,255,0.08)',
 };

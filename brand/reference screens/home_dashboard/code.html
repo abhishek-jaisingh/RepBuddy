@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RepBuddy - Home Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a6f20d",
+                        "background-light": "#f7f8f5",
+                        "background-dark": "#121212",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto border-x border-primary/10">
+<!-- Header -->
+<header class="flex items-center justify-between p-6 pt-8">
+<div class="flex flex-col">
+<span class="text-xs font-bold uppercase tracking-widest text-primary/80">RepBuddy</span>
+<h1 class="text-2xl font-extrabold tracking-tight">Hey Alex, let's crush it.</h1>
+</div>
+<div class="relative group">
+<div class="size-12 rounded-full border-2 border-primary p-0.5 overflow-hidden">
+<img alt="User Profile" class="size-full rounded-full object-cover" data-alt="Athletic man profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL0WNTWgqMzPM0PTtoeuqU7qUud-TjcE9xrfoyzF6sBAE8Z0KfVaQtIGbPbKDZSOjWS_EVvtMpCdTBcpnxql4nrysQojvw4KuQv8Zf6ok2Kw_4iPqxKVcJ_3v8SGdKSqAr3amJjNXBNrjkul44_h2OM4zlPWQ6d0rCzQRHmHqrIvMPT5g1_iyqdSiJX9w1wP3uknTA13KSKjzKRwD7aR-YlgHAsDjUBwlX_0-KD7w4-3A3jf91Vm4WOMV262kP5lAdrMywksUy5Y4c"/>
+</div>
+<span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-background-dark">4</span>
+</div>
+</header>
+<!-- Main Scrollable Content -->
+<main class="flex-1 overflow-y-auto px-6 pb-24">
+<!-- Weekly Progress Summary -->
+<section class="mb-8">
+<div class="flex items-end justify-between mb-4">
+<h2 class="text-sm font-bold uppercase tracking-wider text-white/50">Weekly Progress</h2>
+<span class="text-xs font-medium text-primary">View Insights</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-2 rounded-xl bg-white/5 p-4 border border-white/10">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg">fitness_center</span>
+<span class="text-xs font-semibold uppercase">Volume</span>
+</div>
+<p class="text-2xl font-black">75,000 <span class="text-xs font-normal text-white/40">lbs</span></p>
+<div class="flex items-center gap-1 text-[#0bda2a] text-xs font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12%</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl bg-white/5 p-4 border border-white/10">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+<span class="text-xs font-semibold uppercase">Workouts</span>
+</div>
+<p class="text-2xl font-black">4/5</p>
+<div class="h-1.5 w-full bg-white/10 rounded-full mt-1 overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 80%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Hero CTA -->
+<section class="mb-10">
+<button class="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-primary px-8 py-5 text-lg font-black uppercase tracking-tight text-background-dark transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined font-bold text-2xl">add_circle</span>
+                    Start Empty Workout
+                    <div class="absolute inset-0 bg-white/20 translate-y-full transition-transform group-hover:translate-y-0 opacity-0 group-hover:opacity-100"></div>
+</button>
+</section>
+<!-- Recent Routines -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sm font-bold uppercase tracking-wider text-white/50">Recent Routines</h2>
+<button class="text-xs font-medium text-primary">See All</button>
+</div>
+<div class="space-y-3">
+<!-- Routine Card 1 -->
+<div class="flex items-center justify-between rounded-xl bg-white/5 p-4 border border-white/5 hover:border-primary/30 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">bolt</span>
+</div>
+<div>
+<h3 class="font-bold text-base">Push Day (Hypertrophy)</h3>
+<p class="text-xs text-white/40 font-medium italic">Last performed 2 days ago</p>
+</div>
+</div>
+<button class="flex size-10 items-center justify-center rounded-full bg-white/10 text-white group-hover:bg-primary group-hover:text-background-dark transition-all">
+<span class="material-symbols-outlined material-symbols-fill">play_arrow</span>
+</button>
+</div>
+<!-- Routine Card 2 -->
+<div class="flex items-center justify-between rounded-xl bg-white/5 p-4 border border-white/5 hover:border-primary/30 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">layers</span>
+</div>
+<div>
+<h3 class="font-bold text-base">Pull Day (Strength)</h3>
+<p class="text-xs text-white/40 font-medium italic">Last performed 4 days ago</p>
+</div>
+</div>
+<button class="flex size-10 items-center justify-center rounded-full bg-white/10 text-white group-hover:bg-primary group-hover:text-background-dark transition-all">
+<span class="material-symbols-outlined material-symbols-fill">play_arrow</span>
+</button>
+</div>
+<!-- Routine Card 3 -->
+<div class="flex items-center justify-between rounded-xl bg-white/5 p-4 border border-white/5 hover:border-primary/30 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">settings_accessibility</span>
+</div>
+<div>
+<h3 class="font-bold text-base">Leg Day Chaos</h3>
+<p class="text-xs text-white/40 font-medium italic">Last performed 1 week ago</p>
+</div>
+</div>
+<button class="flex size-10 items-center justify-center rounded-full bg-white/10 text-white group-hover:bg-primary group-hover:text-background-dark transition-all">
+<span class="material-symbols-outlined material-symbols-fill">play_arrow</span>
+</button>
+</div>
+</div>
+<!-- Empty State Prompt (Hidden by default, shown if no routines) -->
+<div class="hidden mt-4 flex flex-col items-center justify-center py-10 rounded-xl border-2 border-dashed border-white/10 text-center">
+<span class="material-symbols-outlined text-4xl text-white/20 mb-2">library_add</span>
+<p class="text-sm text-white/40">Create your first routine in the Library.</p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="absolute bottom-0 left-0 right-0 z-50 bg-background-dark/90 backdrop-blur-lg border-t border-white/10 px-4 pb-6 pt-2">
+<div class="flex items-center justify-between max-w-sm mx-auto">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined material-symbols-fill text-[28px]">home</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Home</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-white/40 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[28px]">history</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">History</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-white/40 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[28px]">format_list_bulleted</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Library</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-white/40 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[28px]">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Dynamic Visual Detail -->
+<div class="absolute -top-20 -right-20 size-64 rounded-full bg-primary/10 blur-[100px] pointer-events-none"></div>
+<div class="absolute top-1/2 -left-32 size-64 rounded-full bg-primary/5 blur-[80px] pointer-events-none"></div>
+</div>
+</body></html>
