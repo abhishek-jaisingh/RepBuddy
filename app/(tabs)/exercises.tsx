@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useCallback, useState } from 'react';
@@ -8,7 +8,7 @@ import { generateId } from '@/utils/helpers';
 import Colors from '@/constants/Colors';
 
 const MUSCLE_GROUPS = ['All', 'Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core'];
-const EMPTY_FORM: Partial<Exercise> = { name: '', muscleGroup: '', equipment: '', notes: '' };
+const EMPTY_FORM: Partial<Exercise> = { name: '', muscleGroup: '', equipment: '', notes: '', bodyweight: false };
 
 export default function ExercisesScreen() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -26,8 +26,9 @@ export default function ExercisesScreen() {
       id: editing.id || generateId(),
       name: editing.name.trim(),
       muscleGroup: editing.muscleGroup?.trim() || undefined,
-      equipment: editing.equipment?.trim() || undefined,
+      equipment: editing.bodyweight ? undefined : editing.equipment?.trim() || undefined,
       notes: editing.notes?.trim() || undefined,
+      bodyweight: editing.bodyweight || undefined,
     };
     await saveExercise(exercise);
     setEditing(null);
@@ -57,13 +58,30 @@ export default function ExercisesScreen() {
         <TextInput style={s.input} placeholder="e.g. Bench Press" placeholderTextColor={Colors.textMuted}
           value={editing.name} onChangeText={(t) => setEditing({ ...editing, name: t })} autoFocus />
 
+        <View style={s.toggleRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={s.toggleLabel}>Bodyweight Exercise</Text>
+            <Text style={s.toggleHint}>No weight input (e.g. push-ups, pull-ups)</Text>
+          </View>
+          <Switch
+            value={editing.bodyweight ?? false}
+            onValueChange={(v) => setEditing({ ...editing, bodyweight: v })}
+            trackColor={{ false: Colors.inputBg, true: Colors.primaryDim }}
+            thumbColor={editing.bodyweight ? Colors.primary : Colors.textMuted}
+          />
+        </View>
+
         <Text style={s.label}>MUSCLE GROUP</Text>
         <TextInput style={s.input} placeholder="e.g. Chest" placeholderTextColor={Colors.textMuted}
           value={editing.muscleGroup} onChangeText={(t) => setEditing({ ...editing, muscleGroup: t })} />
 
-        <Text style={s.label}>EQUIPMENT</Text>
-        <TextInput style={s.input} placeholder="e.g. Barbell" placeholderTextColor={Colors.textMuted}
-          value={editing.equipment} onChangeText={(t) => setEditing({ ...editing, equipment: t })} />
+        {!editing.bodyweight && (
+          <>
+            <Text style={s.label}>EQUIPMENT</Text>
+            <TextInput style={s.input} placeholder="e.g. Barbell" placeholderTextColor={Colors.textMuted}
+              value={editing.equipment} onChangeText={(t) => setEditing({ ...editing, equipment: t })} />
+          </>
+        )}
 
         <Text style={s.label}>NOTES</Text>
         <TextInput style={[s.input, { height: 80, textAlignVertical: 'top' }]} placeholder="Optional notes..."
@@ -120,7 +138,10 @@ export default function ExercisesScreen() {
               <FontAwesome name="trophy" size={18} color={Colors.primary} />
             </View>
             <View style={s.cardBody}>
-              <Text style={s.cardName}>{ex.name}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Text style={s.cardName}>{ex.name}</Text>
+                {ex.bodyweight && <View style={s.bwBadge}><Text style={s.bwBadgeText}>BW</Text></View>}
+              </View>
               {ex.equipment && <Text style={s.cardMeta}>Equipment: {ex.equipment}</Text>}
             </View>
             <TouchableOpacity onPress={() => handleDelete(ex.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
@@ -204,6 +225,21 @@ const s = StyleSheet.create({
     shadowColor: Colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 12,
     elevation: 8,
   },
+
+  // Bodyweight badge
+  bwBadge: {
+    backgroundColor: Colors.primaryDim, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4,
+  },
+  bwBadgeText: { fontSize: 10, fontWeight: '700', color: Colors.primary },
+
+  // Toggle
+  toggleRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: Colors.card, padding: 14, borderRadius: 12,
+    borderColor: Colors.cardBorder, borderWidth: 1, marginTop: 16,
+  },
+  toggleLabel: { fontSize: 15, fontWeight: '700', color: Colors.text },
+  toggleHint: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
 
   // Form
   label: { fontSize: 11, fontWeight: '700', letterSpacing: 1, color: Colors.textSecondary, marginTop: 16, marginBottom: 6 },

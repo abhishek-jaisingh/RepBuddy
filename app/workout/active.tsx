@@ -63,7 +63,7 @@ export default function ActiveWorkoutScreen() {
       if (routine) {
         for (const exId of routine.exerciseIds) {
           const ex = exercises.find((e) => e.id === exId);
-          if (ex) exerciseLogs.push({ id: generateId(), exerciseId: ex.id, name: ex.name, sets: [] });
+          if (ex) exerciseLogs.push({ id: generateId(), exerciseId: ex.id, name: ex.name, sets: [], bodyweight: ex.bodyweight });
         }
       }
     }
@@ -72,7 +72,7 @@ export default function ActiveWorkoutScreen() {
 
   function addExercise(ex: Exercise) {
     if (!workout) return;
-    const newLog: ExerciseLog = { id: generateId(), exerciseId: ex.id, name: ex.name, sets: [] };
+    const newLog: ExerciseLog = { id: generateId(), exerciseId: ex.id, name: ex.name, sets: [], bodyweight: ex.bodyweight };
     const updated = { ...workout, exercises: [...workout.exercises, newLog] };
     setWorkout(updated);
     setActiveIdx(updated.exercises.length - 1);
@@ -84,7 +84,9 @@ export default function ActiveWorkoutScreen() {
     const exs = [...workout.exercises];
     const current = exs[activeIdx];
     const lastSet = current.sets[current.sets.length - 1];
-    const newSet: WorkoutSet = lastSet ? { weight: lastSet.weight, reps: lastSet.reps } : { weight: 0, reps: 0 };
+    const newSet: WorkoutSet = lastSet
+      ? { weight: current.bodyweight ? 0 : lastSet.weight, reps: lastSet.reps }
+      : { weight: 0, reps: 0 };
     exs[activeIdx] = { ...current, sets: [...current.sets, newSet] };
     setWorkout({ ...workout, exercises: exs });
   }
@@ -229,7 +231,7 @@ export default function ActiveWorkoutScreen() {
             <View style={s.exHeader}>
               <View style={{ flex: 1 }}>
                 <Text style={s.exName}>{currentEx.name}</Text>
-                {exVolume > 0 && (
+                {!currentEx.bodyweight && exVolume > 0 && (
                   <Text style={s.exVolume}>Volume: {exVolume.toLocaleString()} kg</Text>
                 )}
               </View>
@@ -242,7 +244,7 @@ export default function ActiveWorkoutScreen() {
             {currentEx.sets.length > 0 && (
               <View style={s.setTableHeader}>
                 <Text style={[s.setHeaderCell, { width: 36 }]}>SET</Text>
-                <Text style={[s.setHeaderCell, { flex: 1 }]}>KG</Text>
+                {!currentEx.bodyweight && <Text style={[s.setHeaderCell, { flex: 1 }]}>KG</Text>}
                 <Text style={[s.setHeaderCell, { flex: 1 }]}>REPS</Text>
                 <View style={{ width: 36 }} />
               </View>
@@ -253,9 +255,11 @@ export default function ActiveWorkoutScreen() {
                 <View style={s.setNumBadge}>
                   <Text style={s.setNum}>{idx + 1}</Text>
                 </View>
-                <TextInput style={s.setInput} keyboardType="decimal-pad"
-                  value={set.weight ? String(set.weight) : ''} onChangeText={(v) => updateSet(idx, 'weight', v)}
-                  placeholder="0" placeholderTextColor={Colors.textMuted} selectTextOnFocus />
+                {!currentEx.bodyweight && (
+                  <TextInput style={s.setInput} keyboardType="decimal-pad"
+                    value={set.weight ? String(set.weight) : ''} onChangeText={(v) => updateSet(idx, 'weight', v)}
+                    placeholder="0" placeholderTextColor={Colors.textMuted} selectTextOnFocus />
+                )}
                 <TextInput style={s.setInput} keyboardType="number-pad"
                   value={set.reps ? String(set.reps) : ''} onChangeText={(v) => updateSet(idx, 'reps', v)}
                   placeholder="0" placeholderTextColor={Colors.textMuted} selectTextOnFocus />

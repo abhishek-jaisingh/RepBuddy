@@ -9,6 +9,7 @@ export interface ExerciseLog {
   name: string;
   sets: WorkoutSet[];
   notes?: string;
+  bodyweight?: boolean;
 }
 
 export interface Workout {
@@ -24,6 +25,7 @@ export interface Exercise {
   muscleGroup?: string;
   equipment?: string;
   notes?: string;
+  bodyweight?: boolean;
 }
 
 export interface Routine {

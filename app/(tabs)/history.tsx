@@ -109,13 +109,13 @@ export default function HistoryScreen() {
                     <Text style={s.exName}>{ex.name}</Text>
                     <View style={s.setTableHeader}>
                       <Text style={[s.setHeaderCell, { width: 36 }]}>SET</Text>
-                      <Text style={[s.setHeaderCell, { flex: 1 }]}>WEIGHT</Text>
+                      {!ex.bodyweight && <Text style={[s.setHeaderCell, { flex: 1 }]}>WEIGHT</Text>}
                       <Text style={[s.setHeaderCell, { flex: 1 }]}>REPS</Text>
                     </View>
                     {ex.sets.map((set, si) => (
                       <View key={si} style={s.setTableRow}>
                         <Text style={[s.setCell, { width: 36 }]}>{si + 1}</Text>
-                        <Text style={[s.setCell, { flex: 1 }]}>{set.weight} kg</Text>
+                        {!ex.bodyweight && <Text style={[s.setCell, { flex: 1 }]}>{set.weight} kg</Text>}
                         <Text style={[s.setCell, { flex: 1 }]}>{set.reps}</Text>
                       </View>
                     ))}
