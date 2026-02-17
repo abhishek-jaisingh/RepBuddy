@@ -230,7 +230,7 @@ export default function ActiveWorkoutScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={s.exName}>{currentEx.name}</Text>
                 {exVolume > 0 && (
-                  <Text style={s.exVolume}>Volume: {exVolume.toLocaleString()} lbs</Text>
+                  <Text style={s.exVolume}>Volume: {exVolume.toLocaleString()} kg</Text>
                 )}
               </View>
               <TouchableOpacity style={s.removeExBtn} onPress={() => removeExercise(activeIdx)}>
@@ -242,7 +242,7 @@ export default function ActiveWorkoutScreen() {
             {currentEx.sets.length > 0 && (
               <View style={s.setTableHeader}>
                 <Text style={[s.setHeaderCell, { width: 36 }]}>SET</Text>
-                <Text style={[s.setHeaderCell, { flex: 1 }]}>LBS</Text>
+                <Text style={[s.setHeaderCell, { flex: 1 }]}>KG</Text>
                 <Text style={[s.setHeaderCell, { flex: 1 }]}>REPS</Text>
                 <View style={{ width: 36 }} />
               </View>

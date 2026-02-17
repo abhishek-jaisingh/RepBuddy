@@ -60,7 +60,7 @@ export default function HomeScreen() {
             </View>
             <Text style={s.statValue}>
               {weeklyVolume.toLocaleString()}{' '}
-              <Text style={s.statUnit}>lbs</Text>
+              <Text style={s.statUnit}>kg</Text>
             </Text>
           </View>
           <View style={s.statCard}>

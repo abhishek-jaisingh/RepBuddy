@@ -98,7 +98,7 @@ export default function HistoryScreen() {
               ) : null}
               <View style={s.metaItem}>
                 <FontAwesome name="bar-chart" size={12} color={Colors.textSecondary} />
-                <Text style={s.metaText}>{vol.toLocaleString()} lbs</Text>
+                <Text style={s.metaText}>{vol.toLocaleString()} kg</Text>
               </View>
             </View>
 
@@ -115,7 +115,7 @@ export default function HistoryScreen() {
                     {ex.sets.map((set, si) => (
                       <View key={si} style={s.setTableRow}>
                         <Text style={[s.setCell, { width: 36 }]}>{si + 1}</Text>
-                        <Text style={[s.setCell, { flex: 1 }]}>{set.weight} lbs</Text>
+                        <Text style={[s.setCell, { flex: 1 }]}>{set.weight} kg</Text>
                         <Text style={[s.setCell, { flex: 1 }]}>{set.reps}</Text>
                       </View>
                     ))}
