@@ -149,6 +149,9 @@ export default function ActiveWorkoutScreen() {
   const exVolume = currentEx
     ? currentEx.sets.reduce((sum, set) => sum + totalVolume(set.weight, set.reps), 0)
     : 0;
+  const exTotalReps = currentEx
+    ? currentEx.sets.reduce((sum, set) => sum + set.reps, 0)
+    : 0;
 
   // Exercise picker overlay
   if (showExercisePicker) {
@@ -233,6 +236,9 @@ export default function ActiveWorkoutScreen() {
                 <Text style={s.exName}>{currentEx.name}</Text>
                 {!currentEx.bodyweight && exVolume > 0 && (
                   <Text style={s.exVolume}>Volume: {exVolume.toLocaleString()} kg</Text>
+                )}
+                {exTotalReps > 0 && (
+                  <Text style={s.exVolume}>Total Reps: {exTotalReps}</Text>
                 )}
               </View>
               <TouchableOpacity style={s.removeExBtn} onPress={() => removeExercise(activeIdx)}>

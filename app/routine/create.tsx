@@ -21,6 +21,24 @@ export default function CreateRoutineScreen() {
     );
   }
 
+  function moveUp(index: number) {
+    if (index === 0) return;
+    setSelectedIds((prev) => {
+      const next = [...prev];
+      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+      return next;
+    });
+  }
+
+  function moveDown(index: number) {
+    setSelectedIds((prev) => {
+      if (index === prev.length - 1) return prev;
+      const next = [...prev];
+      [next[index], next[index + 1]] = [next[index + 1], next[index]];
+      return next;
+    });
+  }
+
   async function handleSave() {
     if (!name.trim()) { Alert.alert('Error', 'Name is required'); return; }
     if (selectedIds.length === 0) { Alert.alert('Error', 'Select at least one exercise'); return; }
@@ -28,6 +46,9 @@ export default function CreateRoutineScreen() {
     await saveRoutine(routine);
     router.back();
   }
+
+  const exerciseMap = Object.fromEntries(exercises.map((e) => [e.id, e]));
+  const unselectedExercises = exercises.filter((e) => !selectedIds.includes(e.id));
 
   return (
     <View style={s.container}>
@@ -38,27 +59,63 @@ export default function CreateRoutineScreen() {
         <TextInput style={s.input} placeholder="e.g. Push Day" placeholderTextColor={Colors.textMuted}
           value={name} onChangeText={setName} autoFocus />
 
-        <Text style={[s.label, { marginTop: 24 }]}>SELECT EXERCISES</Text>
-        <Text style={s.hint}>{selectedIds.length} selected</Text>
+        {selectedIds.length > 0 && (
+          <>
+            <Text style={[s.label, { marginTop: 24 }]}>EXERCISE ORDER</Text>
+            <Text style={s.hint}>{selectedIds.length} selected</Text>
+            {selectedIds.map((exId, index) => {
+              const ex = exerciseMap[exId];
+              if (!ex) return null;
+              return (
+                <View key={exId} style={s.orderedRow}>
+                  <Text style={s.orderIndex}>{index + 1}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.exerciseName}>{ex.name}</Text>
+                    {ex.muscleGroup && <Text style={s.exerciseMeta}>{ex.muscleGroup}</Text>}
+                  </View>
+                  <View style={s.reorderBtns}>
+                    <TouchableOpacity
+                      style={[s.reorderBtn, index === 0 && s.reorderBtnDisabled]}
+                      onPress={() => moveUp(index)}
+                      disabled={index === 0}
+                    >
+                      <FontAwesome name="chevron-up" size={12} color={index === 0 ? Colors.textMuted : Colors.text} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[s.reorderBtn, index === selectedIds.length - 1 && s.reorderBtnDisabled]}
+                      onPress={() => moveDown(index)}
+                      disabled={index === selectedIds.length - 1}
+                    >
+                      <FontAwesome name="chevron-down" size={12} color={index === selectedIds.length - 1 ? Colors.textMuted : Colors.text} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={s.removeBtn} onPress={() => toggle(exId)}>
+                      <FontAwesome name="times" size={12} color={Colors.textMuted} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            })}
+          </>
+        )}
 
+        <Text style={[s.label, { marginTop: 24 }]}>ADD EXERCISES</Text>
         {exercises.length === 0 && (
           <Text style={s.empty}>No exercises yet. Add some in the Library tab first.</Text>
         )}
-        {exercises.map((ex) => {
-          const selected = selectedIds.includes(ex.id);
-          return (
-            <TouchableOpacity key={ex.id} style={[s.exerciseRow, selected && s.exerciseRowSelected]}
-              onPress={() => toggle(ex.id)}>
-              <View style={[s.check, selected && s.checkSelected]}>
-                {selected && <FontAwesome name="check" size={12} color={Colors.bg} />}
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={s.exerciseName}>{ex.name}</Text>
-                {ex.muscleGroup && <Text style={s.exerciseMeta}>{ex.muscleGroup}</Text>}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+        {unselectedExercises.length === 0 && selectedIds.length > 0 && (
+          <Text style={s.hint}>All exercises selected</Text>
+        )}
+        {unselectedExercises.map((ex) => (
+          <TouchableOpacity key={ex.id} style={s.exerciseRow} onPress={() => toggle(ex.id)}>
+            <View style={s.addIcon}>
+              <FontAwesome name="plus" size={12} color={Colors.primary} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={s.exerciseName}>{ex.name}</Text>
+              {ex.muscleGroup && <Text style={s.exerciseMeta}>{ex.muscleGroup}</Text>}
+            </View>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
       <View style={s.footer}>
@@ -91,17 +148,36 @@ const s = StyleSheet.create({
 
   empty: { color: Colors.textMuted, fontSize: 13, marginTop: 8, textAlign: 'center' },
 
+  orderedRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: Colors.primaryDim, padding: 12, borderRadius: 14,
+    marginBottom: 8, borderWidth: 1, borderColor: Colors.primaryBorder,
+  },
+  orderIndex: {
+    fontSize: 13, fontWeight: '800', color: Colors.primary, width: 20, textAlign: 'center',
+  },
+  reorderBtns: { flexDirection: 'row', gap: 4, alignItems: 'center' },
+  reorderBtn: {
+    width: 28, height: 28, borderRadius: 8, backgroundColor: Colors.card,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: Colors.cardBorder,
+  },
+  reorderBtnDisabled: { opacity: 0.3 },
+  removeBtn: {
+    width: 28, height: 28, borderRadius: 8, backgroundColor: Colors.card,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: Colors.cardBorder, marginLeft: 4,
+  },
+
   exerciseRow: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
     backgroundColor: Colors.card, padding: 14, borderRadius: 14,
     marginBottom: 8, borderWidth: 1, borderColor: Colors.cardBorder,
   },
-  exerciseRowSelected: { borderColor: Colors.primaryBorder, backgroundColor: Colors.primaryDim },
-  check: {
+  addIcon: {
     width: 24, height: 24, borderRadius: 6, borderWidth: 2,
-    borderColor: Colors.textMuted, alignItems: 'center', justifyContent: 'center',
+    borderColor: Colors.primary, alignItems: 'center', justifyContent: 'center',
   },
-  checkSelected: { borderColor: Colors.primary, backgroundColor: Colors.primary },
   exerciseName: { color: Colors.text, fontSize: 14, fontWeight: '700' },
   exerciseMeta: { color: Colors.textSecondary, fontSize: 12, marginTop: 2 },
 
