@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Workout, Routine, Exercise } from '@/types';
+import { Workout, Routine, Exercise, UserProfile } from '@/types';
 
 const KEYS = {
   workouts: 'repbuddy_workouts',
   routines: 'repbuddy_routines',
   exercises: 'repbuddy_exercises',
+  profile: 'repbuddy_profile',
 } as const;
 
 async function getJSON<T>(key: string): Promise<T[]> {
@@ -68,4 +69,14 @@ export async function saveRoutine(routine: Routine): Promise<void> {
 export async function deleteRoutine(id: string): Promise<void> {
   const list = await getRoutines();
   await setJSON(KEYS.routines, list.filter((r) => r.id !== id));
+}
+
+// --- User Profile ---
+export async function getProfile(): Promise<UserProfile> {
+  const raw = await AsyncStorage.getItem(KEYS.profile);
+  return raw ? JSON.parse(raw) : {};
+}
+
+export async function saveProfile(profile: UserProfile): Promise<void> {
+  await AsyncStorage.setItem(KEYS.profile, JSON.stringify(profile));
 }

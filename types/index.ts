@@ -33,3 +33,10 @@ export interface Routine {
   name: string;
   exerciseIds: string[];
 }
+
+export interface UserProfile {
+  age?: number;
+  weight?: number;
+  heightFt?: number;
+  heightIn?: number;
+}

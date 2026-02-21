@@ -1,13 +1,31 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, TextInput } from 'react-native';
+import { useState, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { File, Paths } from 'expo-file-system/next';
 import * as Sharing from 'expo-sharing';
-import { getWorkouts } from '@/utils/storage';
+import { getWorkouts, getProfile, saveProfile } from '@/utils/storage';
 import { workoutsToMarkdown } from '@/utils/helpers';
+import { UserProfile } from '@/types';
 import Colors from '@/constants/Colors';
 
 export default function SettingsScreen() {
+  const [profile, setProfile] = useState<UserProfile>({});
+
+  useFocusEffect(
+    useCallback(() => {
+      getProfile().then(setProfile);
+    }, [])
+  );
+
+  function updateField(field: keyof UserProfile, value: string) {
+    const num = value === '' ? undefined : parseFloat(value);
+    const updated = { ...profile, [field]: num };
+    setProfile(updated);
+    saveProfile(updated);
+  }
+
   async function handleClearAll() {
     Alert.alert(
       'Clear All Data',
@@ -19,6 +37,7 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             await AsyncStorage.clear();
+            setProfile({});
             Alert.alert('Done', 'All data cleared.');
           },
         },
@@ -29,6 +48,7 @@ export default function SettingsScreen() {
   async function handleExport(range: 'month' | 'all') {
     try {
       const allWorkouts = await getWorkouts();
+      const userProfile = await getProfile();
 
       let workouts = allWorkouts;
       if (range === 'month') {
@@ -42,7 +62,7 @@ export default function SettingsScreen() {
         return;
       }
 
-      const markdown = workoutsToMarkdown(workouts);
+      const markdown = workoutsToMarkdown(workouts, userProfile);
       const label = range === 'month' ? 'last-month' : 'all-time';
       const filename = `repbuddy-workouts-${label}-${new Date().toISOString().slice(0, 10)}.md`;
       const file = new File(Paths.cache, filename);
@@ -67,6 +87,72 @@ export default function SettingsScreen() {
   return (
     <ScrollView style={s.container} contentContainerStyle={s.content}>
       <Text style={s.pageTitle}>Settings</Text>
+
+      {/* Profile Section */}
+      <Text style={s.sectionLabel}>PROFILE</Text>
+      <View style={s.card}>
+        <View style={s.profileRow}>
+          <View style={s.profileField}>
+            <Text style={s.profileLabel}>Age</Text>
+            <View style={s.profileInputWrap}>
+              <TextInput
+                style={s.profileInput}
+                keyboardType="number-pad"
+                placeholder="—"
+                placeholderTextColor={Colors.textMuted}
+                value={profile.age != null ? String(profile.age) : ''}
+                onChangeText={(v) => updateField('age', v)}
+                selectTextOnFocus
+              />
+              <Text style={s.profileUnit}>yrs</Text>
+            </View>
+          </View>
+          <View style={s.profileField}>
+            <Text style={s.profileLabel}>Weight</Text>
+            <View style={s.profileInputWrap}>
+              <TextInput
+                style={s.profileInput}
+                keyboardType="decimal-pad"
+                placeholder="—"
+                placeholderTextColor={Colors.textMuted}
+                value={profile.weight != null ? String(profile.weight) : ''}
+                onChangeText={(v) => updateField('weight', v)}
+                selectTextOnFocus
+              />
+              <Text style={s.profileUnit}>kg</Text>
+            </View>
+          </View>
+          <View style={s.profileField}>
+            <Text style={s.profileLabel}>Height</Text>
+            <View style={s.heightRow}>
+              <View style={[s.profileInputWrap, { flex: 1 }]}>
+                <TextInput
+                  style={s.profileInput}
+                  keyboardType="number-pad"
+                  placeholder="—"
+                  placeholderTextColor={Colors.textMuted}
+                  value={profile.heightFt != null ? String(profile.heightFt) : ''}
+                  onChangeText={(v) => updateField('heightFt', v)}
+                  selectTextOnFocus
+                />
+                <Text style={s.profileUnit}>ft</Text>
+              </View>
+              <View style={[s.profileInputWrap, { flex: 1 }]}>
+                <TextInput
+                  style={s.profileInput}
+                  keyboardType="number-pad"
+                  placeholder="—"
+                  placeholderTextColor={Colors.textMuted}
+                  value={profile.heightIn != null ? String(profile.heightIn) : ''}
+                  onChangeText={(v) => updateField('heightIn', v)}
+                  selectTextOnFocus
+                />
+                <Text style={s.profileUnit}>in</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
 
       {/* About Section */}
       <Text style={s.sectionLabel}>ABOUT</Text>
@@ -148,6 +234,28 @@ const s = StyleSheet.create({
     fontSize: 10, fontWeight: '700', letterSpacing: 1.5,
     color: Colors.textSecondary, marginTop: 12, marginBottom: 4,
   },
+
+  // Profile
+  profileRow: { flexDirection: 'row', gap: 12 },
+  profileField: { flex: 1 },
+  profileLabel: {
+    fontSize: 10, fontWeight: '700', letterSpacing: 1,
+    color: Colors.textSecondary, marginBottom: 6,
+  },
+  profileInputWrap: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: Colors.inputBg, borderRadius: 10,
+    borderWidth: 1, borderColor: Colors.inputBorder,
+  },
+  profileInput: {
+    flex: 1, color: Colors.text, fontSize: 16, fontWeight: '700',
+    paddingVertical: 10, paddingHorizontal: 12, textAlign: 'center',
+  },
+  profileUnit: {
+    fontSize: 12, color: Colors.textMuted, fontWeight: '600',
+    paddingRight: 10,
+  },
+  heightRow: { flexDirection: 'row', gap: 6 },
 
   card: {
     backgroundColor: Colors.card, borderRadius: 14, padding: 16,

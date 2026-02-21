@@ -1,4 +1,4 @@
-import { Workout } from '@/types';
+import { Workout, UserProfile } from '@/types';
 
 export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -13,7 +13,7 @@ export function totalVolume(weight: number, reps: number): number {
   return weight * reps;
 }
 
-export function workoutsToMarkdown(workouts: Workout[]): string {
+export function workoutsToMarkdown(workouts: Workout[], profile?: UserProfile): string {
   if (workouts.length === 0) return '# Workout History\n\nNo workouts recorded.\n';
 
   const sorted = [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -23,10 +23,20 @@ export function workoutsToMarkdown(workouts: Workout[]): string {
     '',
     `**Exported:** ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
     `**Workouts:** ${workouts.length}`,
-    '',
-    '---',
-    '',
   ];
+
+  if (profile && (profile.age || profile.weight || profile.heightFt)) {
+    lines.push('');
+    lines.push('## Athlete Profile');
+    if (profile.age) lines.push(`- **Age:** ${profile.age} years`);
+    if (profile.weight) lines.push(`- **Body Weight:** ${profile.weight} kg`);
+    if (profile.heightFt != null) {
+      const inches = profile.heightIn ?? 0;
+      lines.push(`- **Height:** ${profile.heightFt}'${inches}"`);
+    }
+  }
+
+  lines.push('', '---', '');
 
   for (const workout of sorted) {
     const date = new Date(workout.date);
