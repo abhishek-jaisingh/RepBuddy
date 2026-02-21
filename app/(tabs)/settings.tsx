@@ -1,6 +1,10 @@
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { File, Paths } from 'expo-file-system/next';
+import * as Sharing from 'expo-sharing';
+import { getWorkouts } from '@/utils/storage';
+import { workoutsToMarkdown } from '@/utils/helpers';
 import Colors from '@/constants/Colors';
 
 export default function SettingsScreen() {
@@ -20,6 +24,44 @@ export default function SettingsScreen() {
         },
       ]
     );
+  }
+
+  async function handleExport(range: 'month' | 'all') {
+    try {
+      const allWorkouts = await getWorkouts();
+
+      let workouts = allWorkouts;
+      if (range === 'month') {
+        const cutoff = new Date();
+        cutoff.setMonth(cutoff.getMonth() - 1);
+        workouts = allWorkouts.filter((w) => new Date(w.date) >= cutoff);
+      }
+
+      if (workouts.length === 0) {
+        Alert.alert('No Data', range === 'month' ? 'No workouts in the last month.' : 'No workouts recorded yet.');
+        return;
+      }
+
+      const markdown = workoutsToMarkdown(workouts);
+      const label = range === 'month' ? 'last-month' : 'all-time';
+      const filename = `repbuddy-workouts-${label}-${new Date().toISOString().slice(0, 10)}.md`;
+      const file = new File(Paths.cache, filename);
+      if (file.exists) {
+        file.delete();
+      }
+      file.create();
+      file.write(markdown);
+
+      const canShare = await Sharing.isAvailableAsync();
+      if (!canShare) {
+        Alert.alert('Export saved', `File written to:\n${file.uri}`);
+        return;
+      }
+
+      await Sharing.shareAsync(file.uri, { mimeType: 'text/markdown', dialogTitle: 'Export Workout History' });
+    } catch (e: any) {
+      Alert.alert('Export Failed', e?.message ?? String(e));
+    }
   }
 
   return (
@@ -53,6 +95,33 @@ export default function SettingsScreen() {
           </View>
         </View>
       </View>
+
+      {/* Export Section */}
+      <Text style={s.sectionLabel}>EXPORT</Text>
+      <TouchableOpacity style={s.card} onPress={() => handleExport('month')}>
+        <View style={s.cardRow}>
+          <View style={s.iconBox}>
+            <FontAwesome name="download" size={18} color={Colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.cardTitle}>Export Last Month</Text>
+            <Text style={s.cardSub}>Share workout history as a Markdown file — paste into any LLM for insights</Text>
+          </View>
+          <FontAwesome name="chevron-right" size={12} color={Colors.textMuted} />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity style={s.card} onPress={() => handleExport('all')}>
+        <View style={s.cardRow}>
+          <View style={s.iconBox}>
+            <FontAwesome name="database" size={18} color={Colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.cardTitle}>Export All Time</Text>
+            <Text style={s.cardSub}>Export your complete workout history as Markdown</Text>
+          </View>
+          <FontAwesome name="chevron-right" size={12} color={Colors.textMuted} />
+        </View>
+      </TouchableOpacity>
 
       {/* Danger Zone */}
       <Text style={s.sectionLabel}>DANGER ZONE</Text>
