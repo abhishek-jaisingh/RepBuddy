@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert 
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState, useRef } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { saveWorkout, getRoutines, getExercises } from '@/utils/storage';
+import { saveWorkout, getRoutines, getExercises, getWorkouts } from '@/utils/storage';
 import { Workout, ExerciseLog, WorkoutSet, Exercise } from '@/types';
 import { generateId, totalVolume } from '@/utils/helpers';
 import Colors from '@/constants/Colors';
@@ -56,8 +56,21 @@ export default function ActiveWorkoutScreen() {
   }
 
   async function loadInitial() {
-    const exercises = await getExercises();
+    const [exercises, workouts] = await Promise.all([getExercises(), getWorkouts()]);
     setAllExercises(exercises);
+
+    // Build a map of exerciseId -> last used weight from history
+    const lastWeightMap: Record<string, number> = {};
+    const sorted = [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    for (const w of sorted) {
+      for (const ex of w.exercises) {
+        if (!(ex.exerciseId in lastWeightMap)) {
+          const lastSet = ex.sets[ex.sets.length - 1];
+          if (lastSet && lastSet.weight > 0) lastWeightMap[ex.exerciseId] = lastSet.weight;
+        }
+      }
+    }
+
     const exerciseLogs: ExerciseLog[] = [];
     if (routineId) {
       const routines = await getRoutines();
@@ -65,7 +78,11 @@ export default function ActiveWorkoutScreen() {
       if (routine) {
         for (const exId of routine.exerciseIds) {
           const ex = exercises.find((e) => e.id === exId);
-          if (ex) exerciseLogs.push({ id: generateId(), exerciseId: ex.id, name: ex.name, sets: [], bodyweight: ex.bodyweight });
+          if (ex) {
+            const lastWeight = lastWeightMap[ex.id];
+            const sets: WorkoutSet[] = lastWeight != null ? [{ weight: lastWeight, reps: 0 }] : [];
+            exerciseLogs.push({ id: generateId(), exerciseId: ex.id, name: ex.name, sets, bodyweight: ex.bodyweight });
+          }
         }
       }
     }
