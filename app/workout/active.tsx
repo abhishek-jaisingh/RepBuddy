@@ -16,6 +16,8 @@ export default function ActiveWorkoutScreen() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  // Raw string buffers for weight inputs so "12." doesn't get normalized while typing
+  const [weightRaw, setWeightRaw] = useState<Record<string, string>>({});
 
   // Rest timer
   const [restSeconds, setRestSeconds] = useState(0);
@@ -93,7 +95,11 @@ export default function ActiveWorkoutScreen() {
 
   function updateSet(setIdx: number, field: 'weight' | 'reps', value: string) {
     if (!workout) return;
-    const num = parseFloat(value) || 0;
+    if (field === 'weight') {
+      const key = `${activeIdx}-${setIdx}`;
+      setWeightRaw((prev) => ({ ...prev, [key]: value }));
+    }
+    const num = value === '' ? 0 : (parseFloat(value) || 0);
     const exs = [...workout.exercises];
     const sets = [...exs[activeIdx].sets];
     sets[setIdx] = { ...sets[setIdx], [field]: num };
@@ -103,6 +109,8 @@ export default function ActiveWorkoutScreen() {
 
   function removeSet(setIdx: number) {
     if (!workout) return;
+    const key = `${activeIdx}-${setIdx}`;
+    setWeightRaw((prev) => { const next = { ...prev }; delete next[key]; return next; });
     const exs = [...workout.exercises];
     exs[activeIdx] = { ...exs[activeIdx], sets: exs[activeIdx].sets.filter((_, i) => i !== setIdx) };
     setWorkout({ ...workout, exercises: exs });
@@ -263,7 +271,8 @@ export default function ActiveWorkoutScreen() {
                 </View>
                 {!currentEx.bodyweight && (
                   <TextInput style={s.setInput} keyboardType="decimal-pad"
-                    value={set.weight ? String(set.weight) : ''} onChangeText={(v) => updateSet(idx, 'weight', v)}
+                    value={weightRaw[`${activeIdx}-${idx}`] ?? (set.weight ? String(set.weight) : '')}
+                    onChangeText={(v) => updateSet(idx, 'weight', v)}
                     placeholder="0" placeholderTextColor={Colors.textMuted} selectTextOnFocus />
                 )}
                 <TextInput style={s.setInput} keyboardType="number-pad"
