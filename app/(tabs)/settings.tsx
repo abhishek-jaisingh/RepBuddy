@@ -141,7 +141,7 @@ export default function SettingsScreen() {
         <View style={s.profileListRow}>
           <Text style={s.profileListLabel}>Height</Text>
           <View style={s.heightRow}>
-            <View style={s.profileInlineInput}>
+            <View style={[s.profileInlineInput, s.heightInput]}>
               <TextInput
                 style={s.profileInlineText}
                 keyboardType="number-pad"
@@ -153,7 +153,7 @@ export default function SettingsScreen() {
               />
               <Text style={s.profileUnit}>ft</Text>
             </View>
-            <View style={s.profileInlineInput}>
+            <View style={[s.profileInlineInput, s.heightInput]}>
               <TextInput
                 style={s.profileInlineText}
                 keyboardType="number-pad"
@@ -272,6 +272,7 @@ const s = StyleSheet.create({
   },
   profileDivider: { height: 1, backgroundColor: Colors.cardBorder },
   heightRow: { flexDirection: 'row', gap: 8, flexShrink: 1 },
+  heightInput: { flex: 1, minWidth: 0 },
 
   card: {
     backgroundColor: Colors.card, borderRadius: 14, padding: 16,
