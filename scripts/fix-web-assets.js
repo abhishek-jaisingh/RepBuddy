@@ -41,4 +41,23 @@ function fixRefs(dir) {
 }
 
 fixRefs(distDir);
+
+// Copy public/ files into dist/
+const publicDir = path.join(__dirname, '..', 'public');
+if (fs.existsSync(publicDir)) {
+  for (const entry of fs.readdirSync(publicDir)) {
+    const src = path.join(publicDir, entry);
+    const dest = path.join(distDir, entry);
+    fs.copyFileSync(src, dest);
+    console.log('Copied public/' + entry + ' → dist/' + entry);
+  }
+}
+
+// Ensure icon is accessible at /assets/images/icon.png
+const iconSrc = path.join(__dirname, '..', 'assets', 'images', 'icon.png');
+const iconDestDir = path.join(distDir, 'assets', 'images');
+fs.mkdirSync(iconDestDir, { recursive: true });
+fs.copyFileSync(iconSrc, path.join(iconDestDir, 'icon.png'));
+console.log('Copied icon.png → dist/assets/images/icon.png');
+
 console.log('Done.');
