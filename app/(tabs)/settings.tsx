@@ -1,10 +1,8 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, TextInput, Platform } from 'react-native';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { File, Paths } from 'expo-file-system/next';
-import * as Sharing from 'expo-sharing';
 import { getWorkouts, getProfile, saveProfile } from '@/utils/storage';
 import { workoutsToMarkdown } from '@/utils/helpers';
 import { UserProfile } from '@/types';
@@ -65,6 +63,22 @@ export default function SettingsScreen() {
       const markdown = workoutsToMarkdown(workouts, userProfile);
       const label = range === 'month' ? 'last-month' : 'all-time';
       const filename = `repbuddy-workouts-${label}-${new Date().toISOString().slice(0, 10)}.md`;
+
+      if (Platform.OS === 'web') {
+        // Web: trigger a file download
+        const blob = new Blob([markdown], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
+      }
+
+      // Native: use expo-file-system + expo-sharing
+      const { File, Paths } = require('expo-file-system/next');
+      const Sharing = require('expo-sharing');
       const file = new File(Paths.cache, filename);
       if (file.exists) {
         file.delete();
