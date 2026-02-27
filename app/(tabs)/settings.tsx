@@ -105,6 +105,7 @@ export default function SettingsScreen() {
       {/* Profile Section */}
       <Text style={s.sectionLabel}>PROFILE</Text>
       <View style={s.card}>
+        {/* Row 1: Age + Weight */}
         <View style={s.profileRow}>
           <View style={s.profileField}>
             <Text style={s.profileLabel}>Age</Text>
@@ -136,9 +137,11 @@ export default function SettingsScreen() {
               <Text style={s.profileUnit}>kg</Text>
             </View>
           </View>
-          <View style={s.profileField}>
-            <Text style={s.profileLabel}>Height</Text>
-            <View style={s.heightRow}>
+        </View>
+        {/* Row 2: Height */}
+        <View style={s.profileHeightRow}>
+          <Text style={s.profileLabel}>Height</Text>
+          <View style={s.heightRow}>
               <View style={[s.profileInputWrap, { flex: 1 }]}>
                 <TextInput
                   style={s.profileInput}
@@ -164,11 +167,11 @@ export default function SettingsScreen() {
                 <Text style={s.profileUnit}>in</Text>
               </View>
             </View>
-          </View>
         </View>
       </View>
 
       {/* About Section */}
+
       <Text style={s.sectionLabel}>ABOUT</Text>
       <View style={s.card}>
         <View style={s.cardRow}>
@@ -251,6 +254,7 @@ const s = StyleSheet.create({
 
   // Profile
   profileRow: { flexDirection: 'row', gap: 12 },
+  profileHeightRow: { marginTop: 12 },
   profileField: { flex: 1 },
   profileLabel: {
     fontSize: 10, fontWeight: '700', letterSpacing: 1,
@@ -269,7 +273,7 @@ const s = StyleSheet.create({
     fontSize: 12, color: Colors.textMuted, fontWeight: '600',
     paddingRight: 10,
   },
-  heightRow: { flexDirection: 'row', gap: 6 },
+  heightRow: { flexDirection: 'row', gap: 12 },
 
   card: {
     backgroundColor: Colors.card, borderRadius: 14, padding: 16,
