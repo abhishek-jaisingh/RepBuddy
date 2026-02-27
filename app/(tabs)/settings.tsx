@@ -271,7 +271,7 @@ const s = StyleSheet.create({
     paddingRight: 10,
   },
   profileDivider: { height: 1, backgroundColor: Colors.cardBorder },
-  heightRow: { flexDirection: 'row', gap: 12 },
+  heightRow: { flexDirection: 'row', gap: 8, flexShrink: 1 },
 
   card: {
     backgroundColor: Colors.card, borderRadius: 14, padding: 16,
