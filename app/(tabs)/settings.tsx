@@ -106,68 +106,66 @@ export default function SettingsScreen() {
       {/* Profile Section */}
       <Text style={s.sectionLabel}>PROFILE</Text>
       <View style={s.card}>
-        {/* Row 1: Age + Weight */}
-        <View style={s.profileRow}>
-          <View style={s.profileField}>
-            <Text style={s.profileLabel}>Age</Text>
-            <View style={s.profileInputWrap}>
+        <View style={s.profileListRow}>
+          <Text style={s.profileListLabel}>Age</Text>
+          <View style={s.profileInlineInput}>
+            <TextInput
+              style={s.profileInlineText}
+              keyboardType="number-pad"
+              placeholder="—"
+              placeholderTextColor={Colors.textMuted}
+              value={profile.age != null ? String(profile.age) : ''}
+              onChangeText={(v) => updateField('age', v)}
+              selectTextOnFocus
+            />
+            <Text style={s.profileUnit}>yrs</Text>
+          </View>
+        </View>
+        <View style={s.profileDivider} />
+        <View style={s.profileListRow}>
+          <Text style={s.profileListLabel}>Weight</Text>
+          <View style={s.profileInlineInput}>
+            <TextInput
+              style={s.profileInlineText}
+              keyboardType="decimal-pad"
+              placeholder="—"
+              placeholderTextColor={Colors.textMuted}
+              value={profile.weight != null ? String(profile.weight) : ''}
+              onChangeText={(v) => updateField('weight', v)}
+              selectTextOnFocus
+            />
+            <Text style={s.profileUnit}>kg</Text>
+          </View>
+        </View>
+        <View style={s.profileDivider} />
+        <View style={s.profileListRow}>
+          <Text style={s.profileListLabel}>Height</Text>
+          <View style={s.heightRow}>
+            <View style={s.profileInlineInput}>
               <TextInput
-                style={s.profileInput}
+                style={s.profileInlineText}
                 keyboardType="number-pad"
                 placeholder="—"
                 placeholderTextColor={Colors.textMuted}
-                value={profile.age != null ? String(profile.age) : ''}
-                onChangeText={(v) => updateField('age', v)}
+                value={profile.heightFt != null ? String(profile.heightFt) : ''}
+                onChangeText={(v) => updateField('heightFt', v)}
                 selectTextOnFocus
               />
-              <Text style={s.profileUnit}>yrs</Text>
+              <Text style={s.profileUnit}>ft</Text>
             </View>
-          </View>
-          <View style={s.profileField}>
-            <Text style={s.profileLabel}>Weight</Text>
-            <View style={s.profileInputWrap}>
+            <View style={s.profileInlineInput}>
               <TextInput
-                style={s.profileInput}
-                keyboardType="decimal-pad"
+                style={s.profileInlineText}
+                keyboardType="number-pad"
                 placeholder="—"
                 placeholderTextColor={Colors.textMuted}
-                value={profile.weight != null ? String(profile.weight) : ''}
-                onChangeText={(v) => updateField('weight', v)}
+                value={profile.heightIn != null ? String(profile.heightIn) : ''}
+                onChangeText={(v) => updateField('heightIn', v)}
                 selectTextOnFocus
               />
-              <Text style={s.profileUnit}>kg</Text>
+              <Text style={s.profileUnit}>in</Text>
             </View>
           </View>
-        </View>
-        {/* Row 2: Height */}
-        <View style={s.profileHeightRow}>
-          <Text style={s.profileLabel}>Height</Text>
-          <View style={s.heightRow}>
-              <View style={[s.profileInputWrap, { flex: 1 }]}>
-                <TextInput
-                  style={s.profileInput}
-                  keyboardType="number-pad"
-                  placeholder="—"
-                  placeholderTextColor={Colors.textMuted}
-                  value={profile.heightFt != null ? String(profile.heightFt) : ''}
-                  onChangeText={(v) => updateField('heightFt', v)}
-                  selectTextOnFocus
-                />
-                <Text style={s.profileUnit}>ft</Text>
-              </View>
-              <View style={[s.profileInputWrap, { flex: 1 }]}>
-                <TextInput
-                  style={s.profileInput}
-                  keyboardType="number-pad"
-                  placeholder="—"
-                  placeholderTextColor={Colors.textMuted}
-                  value={profile.heightIn != null ? String(profile.heightIn) : ''}
-                  onChangeText={(v) => updateField('heightIn', v)}
-                  selectTextOnFocus
-                />
-                <Text style={s.profileUnit}>in</Text>
-              </View>
-            </View>
         </View>
       </View>
 
@@ -254,26 +252,25 @@ const s = StyleSheet.create({
   },
 
   // Profile
-  profileRow: { flexDirection: 'row', gap: 12 },
-  profileHeightRow: { marginTop: 12 },
-  profileField: { flex: 1 },
-  profileLabel: {
-    fontSize: 10, fontWeight: '700', letterSpacing: 1,
-    color: Colors.textSecondary, marginBottom: 6,
+  profileListRow: {
+    flexDirection: 'row', alignItems: 'center',
+    justifyContent: 'space-between', paddingVertical: 10,
   },
-  profileInputWrap: {
+  profileListLabel: { fontSize: 15, fontWeight: '600', color: Colors.text },
+  profileInlineInput: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: Colors.inputBg, borderRadius: 10,
     borderWidth: 1, borderColor: Colors.inputBorder,
   },
-  profileInput: {
-    flex: 1, color: Colors.text, fontSize: 16, fontWeight: '700',
-    paddingVertical: 10, paddingHorizontal: 12, textAlign: 'center',
+  profileInlineText: {
+    color: Colors.text, fontSize: 16, fontWeight: '700',
+    paddingVertical: 8, paddingHorizontal: 12, minWidth: 60, textAlign: 'right',
   },
   profileUnit: {
     fontSize: 12, color: Colors.textMuted, fontWeight: '600',
     paddingRight: 10,
   },
+  profileDivider: { height: 1, backgroundColor: Colors.cardBorder },
   heightRow: { flexDirection: 'row', gap: 12 },
 
   card: {
