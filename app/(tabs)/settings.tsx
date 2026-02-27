@@ -7,6 +7,7 @@ import { getWorkouts, getProfile, saveProfile } from '@/utils/storage';
 import { workoutsToMarkdown } from '@/utils/helpers';
 import { UserProfile } from '@/types';
 import Colors from '@/constants/Colors';
+import { version } from '../../package.json';
 
 export default function SettingsScreen() {
   const [profile, setProfile] = useState<UserProfile>({});
@@ -180,7 +181,7 @@ export default function SettingsScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={s.cardTitle}>RepBuddy</Text>
-            <Text style={s.cardSub}>Version 1.0.0</Text>
+            <Text style={s.cardSub}>Version {version}</Text>
           </View>
         </View>
       </View>
