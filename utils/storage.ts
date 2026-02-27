@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Workout, Routine, Exercise, UserProfile } from '@/types';
+import { generateId } from '@/utils/helpers';
 
 const KEYS = {
   workouts: 'repbuddy_workouts',
@@ -79,4 +80,24 @@ export async function getProfile(): Promise<UserProfile> {
 
 export async function saveProfile(profile: UserProfile): Promise<void> {
   await AsyncStorage.setItem(KEYS.profile, JSON.stringify(profile));
+}
+
+// --- Seed Data ---
+const DEFAULT_EXERCISES: Omit<Exercise, 'id'>[] = [
+  { name: 'Pull Ups', muscleGroup: 'Back', bodyweight: true },
+  { name: 'Push Ups', muscleGroup: 'Chest', bodyweight: true },
+  { name: 'Bench Press', muscleGroup: 'Chest', equipment: 'Barbell' },
+  { name: 'Romanian Deadlift', muscleGroup: 'Legs', equipment: 'Barbell' },
+  { name: 'Shoulder Lateral Raise', muscleGroup: 'Shoulders', equipment: 'Dumbbells' },
+  { name: 'Shoulder Overhead Machine', muscleGroup: 'Shoulders', equipment: 'Machine' },
+  { name: 'Barbell Row', muscleGroup: 'Back', equipment: 'Barbell' },
+  { name: 'Shoulder Face Pull', muscleGroup: 'Shoulders', equipment: 'Cable' },
+  { name: 'Calf Machine', muscleGroup: 'Legs', equipment: 'Machine' },
+];
+
+export async function seedExercisesIfEmpty(): Promise<void> {
+  const existing = await getExercises();
+  if (existing.length > 0) return;
+  const seeded: Exercise[] = DEFAULT_EXERCISES.map((e) => ({ ...e, id: generateId() }));
+  await setJSON(KEYS.exercises, seeded);
 }

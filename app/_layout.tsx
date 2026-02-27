@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import Colors from '@/constants/Colors';
+import { seedExercisesIfEmpty } from '@/utils/storage';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -33,7 +34,10 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
+    if (loaded) {
+      seedExercisesIfEmpty();
+      SplashScreen.hideAsync();
+    }
   }, [loaded]);
 
   if (!loaded) return null;
