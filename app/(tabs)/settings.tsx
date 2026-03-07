@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getWorkouts, getProfile, saveProfile } from '@/utils/storage';
+import { getWorkouts, getProfile, saveProfile, seedExercisesIfEmpty, getExercises } from '@/utils/storage';
 import { workoutsToMarkdown } from '@/utils/helpers';
 import { UserProfile } from '@/types';
 import Colors from '@/constants/Colors';
@@ -23,6 +23,16 @@ export default function SettingsScreen() {
     const updated = { ...profile, [field]: num };
     setProfile(updated);
     saveProfile(updated);
+  }
+
+  async function handleSeedExercises() {
+    const existing = await getExercises();
+    if (existing.length > 0) {
+      Alert.alert('Library Not Empty', 'Default exercises are only added to an empty library. Clear your exercises first, or add them manually.');
+      return;
+    }
+    await seedExercisesIfEmpty();
+    Alert.alert('Done', 'Default exercises added to your library.');
   }
 
   async function handleClearAll() {
@@ -183,6 +193,21 @@ export default function SettingsScreen() {
           </View>
         </View>
       </View>
+
+      {/* Library Section */}
+      <Text style={s.sectionLabel}>LIBRARY</Text>
+      <TouchableOpacity style={s.card} onPress={handleSeedExercises}>
+        <View style={s.cardRow}>
+          <View style={s.iconBox}>
+            <FontAwesome name="list" size={18} color={Colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.cardTitle}>Add Default Exercises</Text>
+            <Text style={s.cardSub}>Populate your library with common exercises to get started quickly</Text>
+          </View>
+          <FontAwesome name="chevron-right" size={12} color={Colors.textMuted} />
+        </View>
+      </TouchableOpacity>
 
       {/* Data Section */}
       <Text style={s.sectionLabel}>DATA & PRIVACY</Text>

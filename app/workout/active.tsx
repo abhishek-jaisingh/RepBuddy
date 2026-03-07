@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState, useRef } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -6,6 +6,14 @@ import { saveWorkout, getRoutines, getExercises, getWorkouts } from '@/utils/sto
 import { Workout, ExerciseLog, WorkoutSet, Exercise } from '@/types';
 import { generateId, totalVolume } from '@/utils/helpers';
 import Colors from '@/constants/Colors';
+
+function confirm(title: string, message: string, onConfirm: () => void) {
+  if (Platform.OS === 'web') {
+    if (window.confirm(`${title}\n${message}`)) onConfirm();
+  } else {
+    Alert.alert(title, message, [{ text: 'Cancel' }, { text: 'OK', onPress: onConfirm }]);
+  }
+}
 
 export default function ActiveWorkoutScreen() {
   const router = useRouter();
@@ -142,7 +150,7 @@ export default function ActiveWorkoutScreen() {
 
   async function handleFinish() {
     if (!workout || workout.exercises.length === 0) {
-      Alert.alert('Empty Workout', 'Add at least one exercise with sets.');
+      if (Platform.OS === 'web') { window.alert('Add at least one exercise with sets.'); } else { Alert.alert('Empty Workout', 'Add at least one exercise with sets.'); }
       return;
     }
     const hasEmptySets = workout.exercises.some((ex) => ex.sets.length === 0);
@@ -152,20 +160,14 @@ export default function ActiveWorkoutScreen() {
       router.back();
     };
     if (hasEmptySets) {
-      Alert.alert('Some exercises have no sets', 'Save anyway?', [
-        { text: 'Cancel' },
-        { text: 'Save', onPress: doSave },
-      ]);
+      confirm('Some exercises have no sets', 'Save anyway?', doSave);
     } else {
       await doSave();
     }
   }
 
   function handleDiscard() {
-    Alert.alert('Discard Workout', 'All progress will be lost.', [
-      { text: 'Cancel' },
-      { text: 'Discard', style: 'destructive', onPress: () => router.back() },
-    ]);
+    confirm('Discard Workout', 'All progress will be lost.', () => router.back());
   }
 
   if (!workout) return <View style={s.container}><Text style={s.loading}>Loading...</Text></View>;
@@ -396,7 +398,7 @@ const s = StyleSheet.create({
   setTableHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, paddingHorizontal: 4 },
   setHeaderCell: { fontSize: 10, fontWeight: '700', letterSpacing: 1, color: Colors.textMuted },
   setRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8,
+    flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8, overflow: 'hidden',
   },
   setNumBadge: {
     width: 28, height: 28, borderRadius: 8, backgroundColor: Colors.cardHighlight,
@@ -404,7 +406,7 @@ const s = StyleSheet.create({
   },
   setNum: { color: Colors.textSecondary, fontSize: 12, fontWeight: '700' },
   setInput: {
-    flex: 1, backgroundColor: Colors.inputBg, color: Colors.text,
+    flex: 1, minWidth: 0, backgroundColor: Colors.inputBg, color: Colors.text,
     paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10,
     borderColor: Colors.inputBorder, borderWidth: 1,
     fontSize: 16, textAlign: 'center', fontWeight: '700',
