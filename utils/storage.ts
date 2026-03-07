@@ -87,12 +87,23 @@ const DEFAULT_EXERCISES: Omit<Exercise, 'id'>[] = [
   { name: 'Pull Ups', muscleGroup: 'Back', bodyweight: true },
   { name: 'Push Ups', muscleGroup: 'Chest', bodyweight: true },
   { name: 'Bench Press', muscleGroup: 'Chest', equipment: 'Barbell' },
+  { name: 'Incline Bench Press', muscleGroup: 'Chest', equipment: 'Barbell' },
+  { name: 'Squat', muscleGroup: 'Legs', equipment: 'Barbell' },
+  { name: 'Deadlift', muscleGroup: 'Legs', equipment: 'Barbell' },
   { name: 'Romanian Deadlift', muscleGroup: 'Legs', equipment: 'Barbell' },
-  { name: 'Shoulder Lateral Raise', muscleGroup: 'Shoulders', equipment: 'Dumbbells' },
-  { name: 'Shoulder Overhead Machine', muscleGroup: 'Shoulders', equipment: 'Machine' },
+  { name: 'Leg Press', muscleGroup: 'Legs', equipment: 'Machine' },
   { name: 'Barbell Row', muscleGroup: 'Back', equipment: 'Barbell' },
-  { name: 'Shoulder Face Pull', muscleGroup: 'Shoulders', equipment: 'Cable' },
-  { name: 'Calf Machine', muscleGroup: 'Legs', equipment: 'Machine' },
+  { name: 'Lat Pulldown', muscleGroup: 'Back', equipment: 'Cable' },
+  { name: 'Cable Row', muscleGroup: 'Back', equipment: 'Cable' },
+  { name: 'Seated Shoulder Press', muscleGroup: 'Shoulders', equipment: 'Machine' },
+  { name: 'Lateral Raise', muscleGroup: 'Shoulders', equipment: 'Dumbbells' },
+  { name: 'Face Pull', muscleGroup: 'Shoulders', equipment: 'Cable' },
+  { name: 'Bicep Curl', muscleGroup: 'Arms', equipment: 'Dumbbells' },
+  { name: 'Dumbbell Hammer Curl', muscleGroup: 'Arms', equipment: 'Dumbbells' },
+  { name: 'Tricep Pushdown', muscleGroup: 'Arms', equipment: 'Cable' },
+  { name: 'Tricep Rope Pushdown', muscleGroup: 'Arms', equipment: 'Cable' },
+  { name: 'Calf Raise', muscleGroup: 'Legs', equipment: 'Machine' },
+  { name: 'Wide Grip Pull Ups', muscleGroup: 'Back', bodyweight: true },
 ];
 
 export async function seedExercisesIfEmpty(): Promise<void> {
@@ -100,4 +111,49 @@ export async function seedExercisesIfEmpty(): Promise<void> {
   if (existing.length > 0) return;
   const seeded: Exercise[] = DEFAULT_EXERCISES.map((e) => ({ ...e, id: generateId() }));
   await setJSON(KEYS.exercises, seeded);
+}
+
+export async function seedRoutines(): Promise<{ added: number }> {
+  const exercises = await getExercises();
+  const byName = Object.fromEntries(exercises.map((e) => [e.name, e.id]));
+
+  const DEFAULT_ROUTINES: Omit<Routine, 'id'>[] = [
+    {
+      name: 'Push',
+      type: 'gym',
+      exerciseIds: [
+        'Bench Press', 'Seated Shoulder Press', 'Lateral Raise', 'Tricep Rope Pushdown',
+      ].map((n) => byName[n]).filter(Boolean),
+    },
+    {
+      name: 'Pull - Home',
+      type: 'home',
+      exerciseIds: ['Pull Ups'].map((n) => byName[n]).filter(Boolean),
+    },
+    {
+      name: 'Legs & Core',
+      type: 'gym',
+      exerciseIds: [
+        'Romanian Deadlift', 'Calf Raise',
+      ].map((n) => byName[n]).filter(Boolean),
+    },
+    {
+      name: 'Push - Home',
+      type: 'home',
+      exerciseIds: ['Push Ups'].map((n) => byName[n]).filter(Boolean),
+    },
+    {
+      name: 'Pull',
+      type: 'gym',
+      exerciseIds: [
+        'Wide Grip Pull Ups', 'Barbell Row', 'Dumbbell Hammer Curl',
+      ].map((n) => byName[n]).filter(Boolean),
+    },
+  ];
+
+  const existing = await getRoutines();
+  const existingNames = new Set(existing.map((r) => r.name));
+  const toAdd = DEFAULT_ROUTINES.filter((r) => !existingNames.has(r.name) && r.exerciseIds.length > 0);
+  for (const r of toAdd) await saveRoutine({ ...r, id: generateId() });
+  return { added: toAdd.length };
 }

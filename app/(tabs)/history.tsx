@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useCallback, useState } from 'react';
@@ -19,10 +19,12 @@ export default function HistoryScreen() {
   }
 
   async function handleDelete(id: string) {
-    Alert.alert('Delete Workout', 'This cannot be undone.', [
-      { text: 'Cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => { await deleteWorkout(id); await reload(); } },
-    ]);
+    const doDelete = async () => { await deleteWorkout(id); await reload(); };
+    if (Platform.OS === 'web') {
+      if (window.confirm('Delete Workout\nThis cannot be undone.')) doDelete();
+    } else {
+      Alert.alert('Delete Workout', 'This cannot be undone.', [{ text: 'Cancel' }, { text: 'Delete', style: 'destructive', onPress: doDelete }]);
+    }
   }
 
   function formatDuration(ms?: number): string {

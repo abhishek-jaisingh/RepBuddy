@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getWorkouts, getProfile, saveProfile, seedExercisesIfEmpty, getExercises } from '@/utils/storage';
+import { getWorkouts, getProfile, saveProfile, seedExercisesIfEmpty, getExercises, seedRoutines } from '@/utils/storage';
 import { workoutsToMarkdown } from '@/utils/helpers';
 import { UserProfile } from '@/types';
 import Colors from '@/constants/Colors';
@@ -28,30 +28,31 @@ export default function SettingsScreen() {
   async function handleSeedExercises() {
     const existing = await getExercises();
     if (existing.length > 0) {
-      Alert.alert('Library Not Empty', 'Default exercises are only added to an empty library. Clear your exercises first, or add them manually.');
+      Platform.OS === 'web'
+        ? window.alert('Default exercises are only added to an empty library. Clear your exercises first, or add them manually.')
+        : Alert.alert('Library Not Empty', 'Default exercises are only added to an empty library. Clear your exercises first, or add them manually.');
       return;
     }
     await seedExercisesIfEmpty();
-    Alert.alert('Done', 'Default exercises added to your library.');
+    Platform.OS === 'web' ? window.alert('Default exercises added to your library.') : Alert.alert('Done', 'Default exercises added to your library.');
+  }
+
+  async function handleSeedRoutines() {
+    const { added } = await seedRoutines();
+    const msg = added > 0 ? `${added} default routines added.` : 'All default routines already exist.';
+    Platform.OS === 'web' ? window.alert(msg) : Alert.alert('Done', msg);
   }
 
   async function handleClearAll() {
-    Alert.alert(
-      'Clear All Data',
-      'This will permanently delete all workouts, routines, and exercises.',
-      [
+    const doDelete = async () => { await AsyncStorage.clear(); setProfile({}); Platform.OS === 'web' ? window.alert('All data cleared.') : Alert.alert('Done', 'All data cleared.'); };
+    if (Platform.OS === 'web') {
+      if (window.confirm('Clear All Data\nThis will permanently delete all workouts, routines, and exercises.')) doDelete();
+    } else {
+      Alert.alert('Clear All Data', 'This will permanently delete all workouts, routines, and exercises.', [
         { text: 'Cancel' },
-        {
-          text: 'Clear Everything',
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.clear();
-            setProfile({});
-            Alert.alert('Done', 'All data cleared.');
-          },
-        },
-      ]
-    );
+        { text: 'Clear Everything', style: 'destructive', onPress: doDelete },
+      ]);
+    }
   }
 
   async function handleExport(range: 'month' | 'all') {
@@ -67,7 +68,8 @@ export default function SettingsScreen() {
       }
 
       if (workouts.length === 0) {
-        Alert.alert('No Data', range === 'month' ? 'No workouts in the last month.' : 'No workouts recorded yet.');
+        const msg = range === 'month' ? 'No workouts in the last month.' : 'No workouts recorded yet.';
+        Platform.OS === 'web' ? window.alert(msg) : Alert.alert('No Data', msg);
         return;
       }
 
@@ -99,13 +101,13 @@ export default function SettingsScreen() {
 
       const canShare = await Sharing.isAvailableAsync();
       if (!canShare) {
-        Alert.alert('Export saved', `File written to:\n${file.uri}`);
+        Platform.OS === 'web' ? window.alert(`File written to:\n${file.uri}`) : Alert.alert('Export saved', `File written to:\n${file.uri}`);
         return;
       }
 
       await Sharing.shareAsync(file.uri, { mimeType: 'text/markdown', dialogTitle: 'Export Workout History' });
     } catch (e: any) {
-      Alert.alert('Export Failed', e?.message ?? String(e));
+      Platform.OS === 'web' ? window.alert(`Export Failed: ${e?.message ?? String(e)}`) : Alert.alert('Export Failed', e?.message ?? String(e));
     }
   }
 
@@ -204,6 +206,18 @@ export default function SettingsScreen() {
           <View style={{ flex: 1 }}>
             <Text style={s.cardTitle}>Add Default Exercises</Text>
             <Text style={s.cardSub}>Populate your library with common exercises to get started quickly</Text>
+          </View>
+          <FontAwesome name="chevron-right" size={12} color={Colors.textMuted} />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity style={s.card} onPress={handleSeedRoutines}>
+        <View style={s.cardRow}>
+          <View style={s.iconBox}>
+            <FontAwesome name="bolt" size={18} color={Colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.cardTitle}>Add Default Routines</Text>
+            <Text style={s.cardSub}>Add Push, Pull, Legs & home workout routines (requires default exercises)</Text>
           </View>
           <FontAwesome name="chevron-right" size={12} color={Colors.textMuted} />
         </View>

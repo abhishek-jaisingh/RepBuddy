@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -53,8 +53,8 @@ export default function EditRoutineScreen() {
 
   async function handleSave() {
     if (!routine) return;
-    if (!name.trim()) { Alert.alert('Error', 'Name is required'); return; }
-    if (selectedIds.length === 0) { Alert.alert('Error', 'Select at least one exercise'); return; }
+    if (!name.trim()) { Platform.OS === 'web' ? window.alert('Name is required') : Alert.alert('Error', 'Name is required'); return; }
+    if (selectedIds.length === 0) { Platform.OS === 'web' ? window.alert('Select at least one exercise') : Alert.alert('Error', 'Select at least one exercise'); return; }
     await saveRoutine({ ...routine, name: name.trim(), exerciseIds: selectedIds });
     router.back();
   }

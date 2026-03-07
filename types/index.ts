@@ -32,6 +32,7 @@ export interface Routine {
   id: string;
   name: string;
   exerciseIds: string[];
+  type?: 'gym' | 'home';
 }
 
 export interface UserProfile {

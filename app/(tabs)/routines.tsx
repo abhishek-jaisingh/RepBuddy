@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -23,10 +23,12 @@ export default function RoutinesScreen() {
   }, []));
 
   async function handleDelete(id: string) {
-    Alert.alert('Delete Routine', 'Are you sure?', [
-      { text: 'Cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => { await deleteRoutine(id); setRoutines(await getRoutines()); } },
-    ]);
+    const doDelete = async () => { await deleteRoutine(id); setRoutines(await getRoutines()); };
+    if (Platform.OS === 'web') {
+      if (window.confirm('Delete Routine\nAre you sure?')) doDelete();
+    } else {
+      Alert.alert('Delete Routine', 'Are you sure?', [{ text: 'Cancel' }, { text: 'Delete', style: 'destructive', onPress: doDelete }]);
+    }
   }
 
   return (
@@ -45,7 +47,14 @@ export default function RoutinesScreen() {
           <View key={r.id} style={s.card}>
             <View style={s.cardHeader}>
               <View style={{ flex: 1 }}>
-                <Text style={s.routineName}>{r.name}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Text style={s.routineName}>{r.name}</Text>
+                  {r.type && (
+                    <View style={[s.typeBadge, r.type === 'home' && s.typeBadgeHome]}>
+                      <Text style={s.typeBadgeText}>{r.type.toUpperCase()}</Text>
+                    </View>
+                  )}
+                </View>
                 <View style={s.metaRow}>
                   <FontAwesome name="list" size={11} color={Colors.textSecondary} />
                   <Text style={s.metaText}>{r.exerciseIds.length} Exercises</Text>
@@ -102,6 +111,11 @@ const s = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   metaText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
   exerciseList: { fontSize: 12, color: Colors.textMuted, lineHeight: 18 },
+  typeBadge: {
+    backgroundColor: Colors.primaryDim, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4,
+  },
+  typeBadgeHome: { backgroundColor: 'rgba(100,180,255,0.15)' },
+  typeBadgeText: { fontSize: 9, fontWeight: '800', letterSpacing: 0.5, color: Colors.primary },
 
   actions: { flexDirection: 'row', gap: 10 },
   startBtn: {

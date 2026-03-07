@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert, Switch, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useCallback, useState } from 'react';
@@ -6,6 +6,14 @@ import { getExercises, saveExercise, deleteExercise } from '@/utils/storage';
 import { Exercise } from '@/types';
 import { generateId } from '@/utils/helpers';
 import Colors from '@/constants/Colors';
+
+function webConfirm(title: string, message: string, onConfirm: () => void) {
+  if (Platform.OS === 'web') {
+    if (window.confirm(`${title}\n${message}`)) onConfirm();
+  } else {
+    Alert.alert(title, message, [{ text: 'Cancel' }, { text: 'Delete', style: 'destructive', onPress: onConfirm }]);
+  }
+}
 
 const MUSCLE_GROUPS = ['All', 'Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core'];
 const EMPTY_FORM: Partial<Exercise> = { name: '', muscleGroup: '', equipment: '', notes: '', bodyweight: false };
@@ -21,7 +29,7 @@ export default function ExercisesScreen() {
   async function reload() { setExercises(await getExercises()); }
 
   async function handleSave() {
-    if (!editing?.name?.trim()) { Alert.alert('Error', 'Name is required'); return; }
+    if (!editing?.name?.trim()) { Platform.OS === 'web' ? window.alert('Name is required') : Alert.alert('Error', 'Name is required'); return; }
     const exercise: Exercise = {
       id: editing.id || generateId(),
       name: editing.name.trim(),
@@ -36,10 +44,7 @@ export default function ExercisesScreen() {
   }
 
   async function handleDelete(id: string) {
-    Alert.alert('Delete Exercise', 'Are you sure?', [
-      { text: 'Cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => { await deleteExercise(id); await reload(); } },
-    ]);
+    webConfirm('Delete Exercise', 'Are you sure?', async () => { await deleteExercise(id); await reload(); });
   }
 
   const filtered = exercises.filter((ex) => {

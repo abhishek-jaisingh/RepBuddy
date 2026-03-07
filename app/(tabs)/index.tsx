@@ -22,6 +22,16 @@ export default function HomeScreen() {
     }, [])
   );
 
+  // Find next suggested routine based on last workout
+  const lastWorkout = workouts.length > 0 ? [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] : null;
+  const lastExerciseIds = new Set(lastWorkout?.exercises.map((e) => e.exerciseId) ?? []);
+  const lastRoutineIdx = lastWorkout
+    ? routines.findIndex((r) => r.exerciseIds.length > 0 && r.exerciseIds.every((id) => lastExerciseIds.has(id)))
+    : -1;
+  const nextRoutine = routines.length > 0
+    ? routines[(lastRoutineIdx + 1) % routines.length]
+    : null;
+
   // Calculate weekly stats
   const now = new Date();
   const weekStart = new Date(now);
@@ -81,13 +91,39 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      {/* Next Routine Suggestion */}
+      {nextRoutine ? (
+        <View style={s.section}>
+          <Text style={s.sectionLabel}>UP NEXT</Text>
+          <TouchableOpacity
+            style={s.nextRoutineCard}
+            activeOpacity={0.85}
+            onPress={() => router.push(`/workout/active?routineId=${nextRoutine.id}`)}
+          >
+            <View style={s.nextRoutineLeft}>
+              <View style={s.nextRoutineIconBox}>
+                <FontAwesome name="bolt" size={20} color={Colors.bg} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={s.nextRoutineName}>{nextRoutine.name}</Text>
+                <Text style={s.nextRoutineMeta}>
+                  {nextRoutine.exerciseIds.length} exercises
+                  {nextRoutine.type ? ` · ${nextRoutine.type}` : ''}
+                </Text>
+              </View>
+            </View>
+            <FontAwesome name="play-circle" size={32} color={Colors.bg} />
+          </TouchableOpacity>
+        </View>
+      ) : null}
+
       {/* Start Workout CTA */}
       <TouchableOpacity
         style={s.ctaButton}
         activeOpacity={0.85}
         onPress={() => router.push('/workout/active')}
       >
-        <FontAwesome name="plus-circle" size={22} color={Colors.bg} />
+        <FontAwesome name="plus-circle" size={16} color={Colors.textMuted} />
         <Text style={s.ctaText}>START EMPTY WORKOUT</Text>
       </TouchableOpacity>
 
@@ -191,21 +227,41 @@ const s = StyleSheet.create({
     borderRadius: 3,
   },
 
+  // Next Routine
+  nextRoutineCard: {
+    backgroundColor: Colors.primary,
+    borderRadius: 14,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  nextRoutineLeft: { flexDirection: 'row', alignItems: 'center', gap: 14, flex: 1 },
+  nextRoutineIconBox: {
+    width: 44, height: 44, borderRadius: 12,
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  nextRoutineName: { fontSize: 17, fontWeight: '800', color: Colors.bg },
+  nextRoutineMeta: { fontSize: 12, fontWeight: '500', color: 'rgba(0,0,0,0.5)', marginTop: 2 },
+
   // CTA
   ctaButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    paddingVertical: 18,
-    borderRadius: 14,
+    gap: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
   },
   ctaText: {
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: 13,
+    fontWeight: '700',
     letterSpacing: 0.5,
-    color: Colors.bg,
+    color: Colors.textSecondary,
   },
 
   // Routine Cards
