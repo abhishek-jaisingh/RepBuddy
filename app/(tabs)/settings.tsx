@@ -398,7 +398,7 @@ export default function SettingsScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={s.cardTitle}>Export All Time</Text>
-            <Text style={s.cardSub}>Export your complete workout history as Markdown</Text>
+            <Text style={s.cardSub}>Export complete workout history as Markdown — paste into any LLM for insights</Text>
           </View>
           <FontAwesome name="chevron-right" size={12} color={Colors.textMuted} />
         </View>
