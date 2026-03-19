@@ -40,4 +40,5 @@ export interface UserProfile {
   weight?: number;
   heightFt?: number;
   heightIn?: number;
+  showFormTips?: boolean;
 }

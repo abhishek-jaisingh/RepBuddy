@@ -2,9 +2,11 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Alert,
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState, useRef } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { saveWorkout, getRoutines, getExercises, getWorkouts } from '@/utils/storage';
+import { saveWorkout, getRoutines, getExercises, getWorkouts, getProfile } from '@/utils/storage';
 import { Workout, ExerciseLog, WorkoutSet, Exercise } from '@/types';
 import { generateId, totalVolume } from '@/utils/helpers';
+import { getFormTip, FormTip } from '@/utils/formTips';
+import FormTipsModal from '@/components/FormTipsModal';
 import Colors from '@/constants/Colors';
 
 function confirm(title: string, message: string, onConfirm: () => void) {
@@ -26,6 +28,8 @@ export default function ActiveWorkoutScreen() {
   const [elapsed, setElapsed] = useState(0);
   // Raw string buffers for weight inputs so "12." doesn't get normalized while typing
   const [weightRaw, setWeightRaw] = useState<Record<string, string>>({});
+  const [showFormTips, setShowFormTips] = useState(true);
+  const [tipsModalVisible, setTipsModalVisible] = useState(false);
 
   // Rest timer
   const [restSeconds, setRestSeconds] = useState(0);
@@ -64,8 +68,9 @@ export default function ActiveWorkoutScreen() {
   }
 
   async function loadInitial() {
-    const [exercises, workouts] = await Promise.all([getExercises(), getWorkouts()]);
+    const [exercises, workouts, profile] = await Promise.all([getExercises(), getWorkouts(), getProfile()]);
     setAllExercises(exercises);
+    setShowFormTips(profile.showFormTips !== false);
 
     // Build a map of exerciseId -> last used weight from history
     const lastWeightMap: Record<string, number> = {};
@@ -268,9 +273,16 @@ export default function ActiveWorkoutScreen() {
                   <Text style={s.exVolume}>Total Reps: {exTotalReps}</Text>
                 )}
               </View>
-              <TouchableOpacity style={s.removeExBtn} onPress={() => removeExercise(activeIdx)}>
-                <FontAwesome name="trash-o" size={14} color={Colors.danger} />
-              </TouchableOpacity>
+              <View style={s.exActions}>
+                {showFormTips && getFormTip(currentEx.name) && (
+                  <TouchableOpacity style={s.infoBtn} onPress={() => setTipsModalVisible(true)}>
+                    <FontAwesome name="info-circle" size={16} color={Colors.primary} />
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity style={s.removeExBtn} onPress={() => removeExercise(activeIdx)}>
+                  <FontAwesome name="trash-o" size={14} color={Colors.danger} />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Set Table */}
@@ -335,6 +347,16 @@ export default function ActiveWorkoutScreen() {
           <Text style={s.addExText}>ADD EXERCISE</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Form Tips Modal */}
+      {currentEx && getFormTip(currentEx.name) && (
+        <FormTipsModal
+          visible={tipsModalVisible}
+          exerciseName={currentEx.name}
+          tip={getFormTip(currentEx.name)!}
+          onClose={() => setTipsModalVisible(false)}
+        />
+      )}
     </View>
   );
 }
@@ -389,6 +411,11 @@ const s = StyleSheet.create({
   },
   exName: { color: Colors.text, fontSize: 22, fontWeight: '800' },
   exVolume: { color: Colors.textSecondary, fontSize: 12, fontWeight: '500', marginTop: 4 },
+  exActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  infoBtn: {
+    width: 36, height: 36, borderRadius: 10, backgroundColor: Colors.primaryDim,
+    alignItems: 'center', justifyContent: 'center',
+  },
   removeExBtn: {
     width: 36, height: 36, borderRadius: 10, backgroundColor: 'rgba(255,68,68,0.10)',
     alignItems: 'center', justifyContent: 'center',

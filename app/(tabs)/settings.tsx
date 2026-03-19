@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, TextInput, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, TextInput, Platform, Switch } from 'react-native';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -306,6 +306,30 @@ export default function SettingsScreen() {
             <Text style={s.cardTitle}>RepBuddy</Text>
             <Text style={s.cardSub}>Version {version}</Text>
           </View>
+        </View>
+      </View>
+
+      {/* Workout Section */}
+      <Text style={s.sectionLabel}>WORKOUT</Text>
+      <View style={s.card}>
+        <View style={s.cardRow}>
+          <View style={s.iconBox}>
+            <FontAwesome name="lightbulb-o" size={18} color={Colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.cardTitle}>Show Form Tips</Text>
+            <Text style={s.cardSub}>Display exercise form cues and video links during workouts</Text>
+          </View>
+          <Switch
+            value={profile.showFormTips !== false}
+            onValueChange={(v) => {
+              const updated = { ...profile, showFormTips: v };
+              setProfile(updated);
+              saveProfile(updated);
+            }}
+            trackColor={{ false: Colors.cardHighlight, true: Colors.primary }}
+            thumbColor="#fff"
+          />
         </View>
       </View>
 
