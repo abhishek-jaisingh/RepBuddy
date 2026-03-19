@@ -23,7 +23,18 @@ export default function HomeScreen() {
   );
 
   // Find next suggested routine based on last workout
-  const lastWorkout = workouts.length > 0 ? [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] : null;
+  const sortedWorkouts = workouts.length > 0 ? [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) : [];
+  const lastWorkout = sortedWorkouts[0] ?? null;
+
+  const lastWorkoutLabel = (() => {
+    if (!lastWorkout) return null;
+    const d = new Date(lastWorkout.date);
+    const today = new Date();
+    const diffDays = Math.floor((today.setHours(0,0,0,0) - d.setHours(0,0,0,0)) / 86400000);
+    if (diffDays === 0) return 'Last workout: Today';
+    if (diffDays === 1) return 'Last workout: Yesterday';
+    return `Last workout: ${diffDays} days ago`;
+  })();
   const lastExerciseIds = new Set(lastWorkout?.exercises.map((e) => e.exerciseId) ?? []);
   const lastRoutineIdx = lastWorkout
     ? routines.findIndex((r) => r.exerciseIds.length > 0 && r.exerciseIds.every((id) => lastExerciseIds.has(id)))
@@ -56,6 +67,9 @@ export default function HomeScreen() {
         <View>
           <Text style={s.brandLabel}>REPBUDDY</Text>
           <Text style={s.greeting}>Let's crush it.</Text>
+          {lastWorkoutLabel ? (
+            <Text style={s.lastWorkout}>{lastWorkoutLabel}</Text>
+          ) : null}
         </View>
       </View>
 
@@ -188,6 +202,7 @@ const s = StyleSheet.create({
     marginBottom: 4,
   },
   greeting: { fontSize: 26, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
+  lastWorkout: { fontSize: 12, fontWeight: '500', color: Colors.textSecondary, marginTop: 4 },
 
   // Sections
   section: { gap: 12 },
