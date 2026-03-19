@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getWorkouts, getProfile, saveProfile, seedExercisesIfEmpty, getExercises, seedRoutines } from '@/utils/storage';
+import { getWorkouts, getRoutines, getProfile, saveProfile, seedExercisesIfEmpty, getExercises, seedRoutines } from '@/utils/storage';
 import { workoutsToMarkdown } from '@/utils/helpers';
 import { UserProfile } from '@/types';
 import Colors from '@/constants/Colors';
@@ -108,6 +108,119 @@ export default function SettingsScreen() {
       await Sharing.shareAsync(file.uri, { mimeType: 'text/markdown', dialogTitle: 'Export Workout History' });
     } catch (e: any) {
       Platform.OS === 'web' ? window.alert(`Export Failed: ${e?.message ?? String(e)}`) : Alert.alert('Export Failed', e?.message ?? String(e));
+    }
+  }
+
+  async function handleBackup() {
+    try {
+      const [workouts, routines, exercises, profile] = await Promise.all([
+        getWorkouts(),
+        getRoutines(),
+        getExercises(),
+        getProfile(),
+      ]);
+      const backup = { version: 1, exportedAt: new Date().toISOString(), workouts, routines, exercises, profile };
+      const json = JSON.stringify(backup, null, 2);
+      const filename = `repbuddy-backup-${new Date().toISOString().slice(0, 10)}.json`;
+
+      if (Platform.OS === 'web') {
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
+      }
+
+      const { File, Paths } = require('expo-file-system/next');
+      const Sharing = require('expo-sharing');
+      const file = new File(Paths.cache, filename);
+      if (file.exists) file.delete();
+      file.create();
+      file.write(json);
+      const canShare = await Sharing.isAvailableAsync();
+      if (!canShare) {
+        Alert.alert('Backup saved', `File written to:\n${file.uri}`);
+        return;
+      }
+      await Sharing.shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: 'Save RepBuddy Backup' });
+    } catch (e: any) {
+      const msg = `Backup Failed: ${e?.message ?? String(e)}`;
+      Platform.OS === 'web' ? window.alert(msg) : Alert.alert('Backup Failed', e?.message ?? String(e));
+    }
+  }
+
+  async function performImport(json: string) {
+    let backup: any;
+    try {
+      backup = JSON.parse(json);
+    } catch {
+      const msg = 'Invalid file: could not parse JSON.';
+      Platform.OS === 'web' ? window.alert(msg) : Alert.alert('Import Failed', msg);
+      return;
+    }
+
+    if (!backup.workouts || !backup.exercises || !backup.routines) {
+      const msg = 'Invalid backup file: missing required data.';
+      Platform.OS === 'web' ? window.alert(msg) : Alert.alert('Import Failed', msg);
+      return;
+    }
+
+    const doImport = async () => {
+      try {
+        await AsyncStorage.setItem('repbuddy_workouts', JSON.stringify(backup.workouts));
+        await AsyncStorage.setItem('repbuddy_exercises', JSON.stringify(backup.exercises));
+        await AsyncStorage.setItem('repbuddy_routines', JSON.stringify(backup.routines));
+        if (backup.profile) await AsyncStorage.setItem('repbuddy_profile', JSON.stringify(backup.profile));
+        const msg = `Restored ${backup.workouts.length} workouts, ${backup.exercises.length} exercises, ${backup.routines.length} routines.`;
+        Platform.OS === 'web' ? window.alert(`Import successful!\n${msg}`) : Alert.alert('Import Successful', msg);
+        getProfile().then(setProfile);
+      } catch (e: any) {
+        const msg = `Import Failed: ${e?.message ?? String(e)}`;
+        Platform.OS === 'web' ? window.alert(msg) : Alert.alert('Import Failed', e?.message ?? String(e));
+      }
+    };
+
+    const confirmMsg = `This will replace all current data with:\n• ${backup.workouts.length} workouts\n• ${backup.exercises.length} exercises\n• ${backup.routines.length} routines\n\nContinue?`;
+    if (Platform.OS === 'web') {
+      if (window.confirm(`Restore Backup\n${confirmMsg}`)) doImport();
+    } else {
+      Alert.alert('Restore Backup', confirmMsg, [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Restore', style: 'destructive', onPress: doImport },
+      ]);
+    }
+  }
+
+  async function handleImport() {
+    if (Platform.OS === 'web') {
+      // Web: use hidden file input
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.onchange = async (e: any) => {
+        const file = e.target?.files?.[0];
+        if (!file) return;
+        const text = await file.text();
+        performImport(text);
+      };
+      input.click();
+      return;
+    }
+
+    // Native: use expo-document-picker
+    try {
+      const DocumentPicker = require('expo-document-picker');
+      const result = await DocumentPicker.getDocumentAsync({ type: ['application/json', 'public.json', 'public.item'], copyToCacheDirectory: true });
+      if (result.canceled || !result.assets?.[0]) return;
+      const { File } = require('expo-file-system/next');
+      const file = new File(result.assets[0].uri);
+      const text = file.text();
+      performImport(text);
+    } catch (e: any) {
+      Alert.alert('Import Failed', e?.message ?? String(e));
     }
   }
 
@@ -237,6 +350,33 @@ export default function SettingsScreen() {
         </View>
       </View>
 
+      {/* Backup & Restore Section */}
+      <Text style={s.sectionLabel}>BACKUP & RESTORE</Text>
+      <TouchableOpacity style={s.card} onPress={handleBackup}>
+        <View style={s.cardRow}>
+          <View style={s.iconBox}>
+            <FontAwesome name="database" size={18} color={Colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.cardTitle}>Backup All Data</Text>
+            <Text style={s.cardSub}>Export all workouts, exercises, routines & profile as a JSON file</Text>
+          </View>
+          <FontAwesome name="chevron-right" size={12} color={Colors.textMuted} />
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity style={s.card} onPress={handleImport}>
+        <View style={s.cardRow}>
+          <View style={s.iconBox}>
+            <FontAwesome name="upload" size={18} color={Colors.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.cardTitle}>Restore from Backup</Text>
+            <Text style={s.cardSub}>Import a previously exported JSON backup file</Text>
+          </View>
+          <FontAwesome name="chevron-right" size={12} color={Colors.textMuted} />
+        </View>
+      </TouchableOpacity>
+
       {/* Export Section */}
       <Text style={s.sectionLabel}>EXPORT</Text>
       <TouchableOpacity style={s.card} onPress={() => handleExport('month')}>
@@ -254,7 +394,7 @@ export default function SettingsScreen() {
       <TouchableOpacity style={s.card} onPress={() => handleExport('all')}>
         <View style={s.cardRow}>
           <View style={s.iconBox}>
-            <FontAwesome name="database" size={18} color={Colors.primary} />
+            <FontAwesome name="download" size={18} color={Colors.primary} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={s.cardTitle}>Export All Time</Text>
