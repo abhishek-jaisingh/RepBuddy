@@ -23,6 +23,7 @@ export default function ActiveWorkoutScreen() {
 
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
+  const [lastSetsMap, setLastSetsMap] = useState<Record<string, WorkoutSet[]>>({});
   const [activeIdx, setActiveIdx] = useState(0);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -72,8 +73,9 @@ export default function ActiveWorkoutScreen() {
     setAllExercises(exercises);
     setShowFormTips(profile.showFormTips !== false);
 
-    // Build a map of exerciseId -> last used weight from history
+    // Build maps of exerciseId -> last used weight and last sets from history
     const lastWeightMap: Record<string, number> = {};
+    const lastSets: Record<string, WorkoutSet[]> = {};
     const sorted = [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     for (const w of sorted) {
       for (const ex of w.exercises) {
@@ -81,8 +83,12 @@ export default function ActiveWorkoutScreen() {
           const lastSet = ex.sets[ex.sets.length - 1];
           if (lastSet && lastSet.weight > 0) lastWeightMap[ex.exerciseId] = lastSet.weight;
         }
+        if (!(ex.exerciseId in lastSets) && ex.sets.length > 0) {
+          lastSets[ex.exerciseId] = ex.sets;
+        }
       }
     }
+    setLastSetsMap(lastSets);
 
     const exerciseLogs: ExerciseLog[] = [];
     if (routineId) {
@@ -285,6 +291,20 @@ export default function ActiveWorkoutScreen() {
               </View>
             </View>
 
+            {/* Last Workout Reference */}
+            {lastSetsMap[currentEx.exerciseId]?.length > 0 && (
+              <View style={s.lastWorkoutCard}>
+                <Text style={s.lastWorkoutLabel}>LAST TIME</Text>
+                <Text style={s.lastWorkoutSets}>
+                  {lastSetsMap[currentEx.exerciseId].map((set, i) =>
+                    currentEx.bodyweight
+                      ? `${i + 1}: ${set.reps} reps`
+                      : `${i + 1}: ${set.weight}kg × ${set.reps}`
+                  ).join('   ')}
+                </Text>
+              </View>
+            )}
+
             {/* Set Table */}
             {currentEx.sets.length > 0 && (
               <View style={s.setTableHeader}>
@@ -419,6 +439,23 @@ const s = StyleSheet.create({
   removeExBtn: {
     width: 36, height: 36, borderRadius: 10, backgroundColor: 'rgba(255,68,68,0.10)',
     alignItems: 'center', justifyContent: 'center',
+  },
+
+  // Last workout reference
+  lastWorkoutCard: {
+    backgroundColor: Colors.primaryDim,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.primaryBorder,
+  },
+  lastWorkoutLabel: {
+    fontSize: 10, fontWeight: '700', letterSpacing: 1.2, color: Colors.primary, marginBottom: 4,
+  },
+  lastWorkoutSets: {
+    fontSize: 13, fontWeight: '600', color: Colors.text,
   },
 
   // Set table

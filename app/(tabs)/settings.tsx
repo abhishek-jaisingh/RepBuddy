@@ -217,7 +217,7 @@ export default function SettingsScreen() {
       if (result.canceled || !result.assets?.[0]) return;
       const { File } = require('expo-file-system/next');
       const file = new File(result.assets[0].uri);
-      const text = file.text();
+      const text = await file.text();
       performImport(text);
     } catch (e: any) {
       Alert.alert('Import Failed', e?.message ?? String(e));
