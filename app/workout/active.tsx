@@ -294,7 +294,18 @@ export default function ActiveWorkoutScreen() {
             {/* Last Workout Reference */}
             {lastSetsMap[currentEx.exerciseId]?.length > 0 && (
               <View style={s.lastWorkoutCard}>
-                <Text style={s.lastWorkoutLabel}>LAST TIME</Text>
+                <View style={s.lastWorkoutHeader}>
+                  <Text style={s.lastWorkoutLabel}>LAST TIME</Text>
+                  {currentEx.bodyweight ? (
+                    <Text style={s.lastWorkoutSummary}>
+                      {lastSetsMap[currentEx.exerciseId].reduce((sum, set) => sum + set.reps, 0)} reps
+                    </Text>
+                  ) : (
+                    <Text style={s.lastWorkoutSummary}>
+                      {lastSetsMap[currentEx.exerciseId].reduce((sum, set) => sum + totalVolume(set.weight, set.reps), 0).toLocaleString()} kg
+                    </Text>
+                  )}
+                </View>
                 <Text style={s.lastWorkoutSets}>
                   {lastSetsMap[currentEx.exerciseId].map((set, i) =>
                     currentEx.bodyweight
@@ -451,8 +462,14 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.primaryBorder,
   },
+  lastWorkoutHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4,
+  },
   lastWorkoutLabel: {
-    fontSize: 10, fontWeight: '700', letterSpacing: 1.2, color: Colors.primary, marginBottom: 4,
+    fontSize: 10, fontWeight: '700', letterSpacing: 1.2, color: Colors.primary,
+  },
+  lastWorkoutSummary: {
+    fontSize: 12, fontWeight: '700', color: Colors.primary,
   },
   lastWorkoutSets: {
     fontSize: 13, fontWeight: '600', color: Colors.text,
