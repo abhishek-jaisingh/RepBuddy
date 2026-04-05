@@ -43,9 +43,9 @@ const STANDARDS: Record<string, Standard> = {
   'Leg Press':              { type: 'weight', novice: 1.5,  intermediate: 2.25, advanced: 3.0,  elite: 3.75 },
   'Calf Raise':             { type: 'weight', novice: 0.75, intermediate: 1.25, advanced: 1.75, elite: 2.25 },
   // Bodyweight: thresholds are max reps in a single set
-  'Pull Ups':               { type: 'reps', novice: 3,  intermediate: 8,  advanced: 15, elite: 20 },
-  'Wide Grip Pull Ups':     { type: 'reps', novice: 3,  intermediate: 8,  advanced: 15, elite: 20 },
-  'Push Ups':               { type: 'reps', novice: 10, intermediate: 20, advanced: 35, elite: 50 },
+  'Pull Ups':               { type: 'reps', novice: 1,  intermediate: 5,  advanced: 12, elite: 20 },
+  'Wide Grip Pull Ups':     { type: 'reps', novice: 1,  intermediate: 5,  advanced: 12, elite: 20 },
+  'Push Ups':               { type: 'reps', novice: 5,  intermediate: 15, advanced: 30, elite: 50 },
 };
 
 export interface StrengthResult {
