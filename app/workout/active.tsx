@@ -351,7 +351,7 @@ return () => {
                       <View style={s.strengthTrackRow}>
                         {tiers.map((tier, i) => {
                           const isActive = activeIdx === i;
-                          const isDone = activeIdx > i;
+                          const isDone = activeIdx >= i;
                           const isLineFilled = activeIdx >= i;
                           const isLineAfterFilled = activeIdx > i;
                           return (
