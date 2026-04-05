@@ -347,11 +347,12 @@ return () => {
                     const activeIdx = strengthResult.tier ? tiers.indexOf(strengthResult.tier) : -1;
                     const isActive = strengthResult.tier === tier;
                     const isFilled = activeIdx >= tierIdx;
-                    const isLineAfterFilled = activeIdx > tierIdx;
+                    // Line before this dot is green if the previous dot is also reached
+                    const isLineFilled = activeIdx >= tierIdx;
                     return (
                       <View key={tier} style={s.strengthTrackItem}>
                         <View style={s.strengthTrackDotRow}>
-                          {i > 0 && <View style={[s.strengthLine, isLineAfterFilled && s.strengthLineFilled]} />}
+                          {i > 0 && <View style={[s.strengthLine, isLineFilled && s.strengthLineFilled]} />}
                           <View style={[s.strengthDot, isFilled && s.strengthDotFilled, isActive && s.strengthDotActive]} />
                         </View>
                         <Text style={[s.strengthTierLabel, isActive && s.strengthTierLabelActive]}>
