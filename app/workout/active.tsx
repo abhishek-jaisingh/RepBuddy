@@ -7,6 +7,7 @@ import { Workout, ExerciseLog, WorkoutSet, Exercise } from '@/types';
 import { generateId, totalVolume } from '@/utils/helpers';
 import { getFormTip, FormTip } from '@/utils/formTips';
 import FormTipsModal from '@/components/FormTipsModal';
+import { getStrengthTier, StrengthTier } from '@/utils/strengthStandards';
 import Colors from '@/constants/Colors';
 
 function playBeepOn(ctx: AudioContext) {
@@ -38,6 +39,7 @@ export default function ActiveWorkoutScreen() {
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
   const [lastSetsMap, setLastSetsMap] = useState<Record<string, WorkoutSet[]>>({});
+  const [bestMap, setBestMap] = useState<Record<string, number>>({}); // exerciseId -> best weight or best reps
   const [activeIdx, setActiveIdx] = useState(0);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -45,6 +47,7 @@ export default function ActiveWorkoutScreen() {
   const [weightRaw, setWeightRaw] = useState<Record<string, string>>({});
   const [showFormTips, setShowFormTips] = useState(true);
   const [tipsModalVisible, setTipsModalVisible] = useState(false);
+  const [profileWeight, setProfileWeight] = useState<number | undefined>(undefined);
 
   // Rest timer
   const [restSeconds, setRestSeconds] = useState(0);
@@ -91,10 +94,12 @@ return () => {
     const [exercises, workouts, profile] = await Promise.all([getExercises(), getWorkouts(), getProfile()]);
     setAllExercises(exercises);
     setShowFormTips(profile.showFormTips !== false);
+    setProfileWeight(profile.weight);
 
-    // Build maps of exerciseId -> last used weight and last sets from history
+    // Build maps of exerciseId -> last used weight, last sets, and all-time best
     const lastWeightMap: Record<string, number> = {};
     const lastSets: Record<string, WorkoutSet[]> = {};
+    const best: Record<string, number> = {};
     const sorted = [...workouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     for (const w of sorted) {
       for (const ex of w.exercises) {
@@ -105,9 +110,15 @@ return () => {
         if (!(ex.exerciseId in lastSets) && ex.sets.length > 0) {
           lastSets[ex.exerciseId] = ex.sets;
         }
+        // Best weight or best reps (for bodyweight)
+        for (const set of ex.sets) {
+          const val = ex.bodyweight ? set.reps : set.weight;
+          if (val > (best[ex.exerciseId] ?? 0)) best[ex.exerciseId] = val;
+        }
       }
     }
     setLastSetsMap(lastSets);
+    setBestMap(best);
 
     const exerciseLogs: ExerciseLog[] = [];
     if (routineId) {
@@ -210,6 +221,10 @@ return () => {
     ? currentEx.sets.reduce((sum, set) => sum + set.reps, 0)
     : 0;
 
+  const strengthResult = currentEx
+    ? getStrengthTier(currentEx.name, profileWeight, bestMap[currentEx.exerciseId] ?? 0)
+    : null;
+
   // Exercise picker overlay
   if (showExercisePicker) {
     return (
@@ -309,6 +324,32 @@ return () => {
                 </TouchableOpacity>
               </View>
             </View>
+
+            {/* Strength Standard */}
+            {strengthResult?.standards && (
+              <View style={s.strengthCard}>
+                <View style={s.strengthRow}>
+                  {(['novice', 'intermediate', 'advanced', 'elite'] as StrengthTier[]).map((tier) => {
+                    const isActive = strengthResult.tier === tier;
+                    const isPast = strengthResult.tier !== null && (
+                      ['novice','intermediate','advanced','elite'].indexOf(strengthResult.tier) >=
+                      ['novice','intermediate','advanced','elite'].indexOf(tier)
+                    );
+                    return (
+                      <View key={tier} style={s.strengthTierCol}>
+                        <View style={[s.strengthDot, isPast && s.strengthDotFilled, isActive && s.strengthDotActive]} />
+                        <Text style={[s.strengthTierLabel, isActive && s.strengthTierLabelActive]}>
+                          {tier.charAt(0).toUpperCase() + tier.slice(1)}
+                        </Text>
+                        <Text style={s.strengthTierVal}>
+                          {strengthResult.standards[tier as keyof typeof strengthResult.standards]}{strengthResult.standards.unit === 'reps' ? 'r' : 'kg'}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            )}
 
             {/* Last Workout Reference */}
             {lastSetsMap[currentEx.exerciseId]?.length > 0 && (
@@ -477,6 +518,29 @@ const s = StyleSheet.create({
     width: 36, height: 36, borderRadius: 10, backgroundColor: 'rgba(255,68,68,0.10)',
     alignItems: 'center', justifyContent: 'center',
   },
+
+  // Strength standard
+  strengthCard: {
+    backgroundColor: Colors.card,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+  },
+  strengthRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  strengthTierCol: { alignItems: 'center', flex: 1, gap: 4 },
+  strengthDot: {
+    width: 10, height: 10, borderRadius: 5,
+    borderWidth: 1.5, borderColor: Colors.textMuted,
+    backgroundColor: 'transparent',
+  },
+  strengthDotFilled: { borderColor: Colors.primary, backgroundColor: Colors.primaryDim },
+  strengthDotActive: { borderColor: Colors.primary, backgroundColor: Colors.primary },
+  strengthTierLabel: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5, color: Colors.textMuted },
+  strengthTierLabelActive: { color: Colors.primary },
+  strengthTierVal: { fontSize: 11, fontWeight: '600', color: Colors.textSecondary },
 
   // Last workout reference
   lastWorkoutCard: {
