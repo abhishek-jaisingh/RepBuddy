@@ -347,15 +347,17 @@ return () => {
                     <>
                       <View style={s.strengthTrackRow}>
                         {tiers.map((tier, i) => {
-                          const tierIdx = i;
-                          const isFilled = activeIdx >= tierIdx;
-                          const isActive = strengthResult.tier === tier;
-                          const isLineFilled = activeIdx >= tierIdx;
+                          const isActive = activeIdx === i;
+                          const isDone = activeIdx > i;
+                          const isLineFilled = activeIdx >= i;
+                          const isLineAfterFilled = activeIdx > i;
                           return (
                             <View key={tier} style={s.strengthTrackItem}>
                               {i > 0 && <View style={[s.strengthLine, isLineFilled && s.strengthLineFilled]} />}
-                              <View style={[s.strengthDot, isFilled && s.strengthDotFilled, isActive && s.strengthDotActive]} />
-                              {i < tiers.length - 1 && <View style={[s.strengthLine, (activeIdx > tierIdx) && s.strengthLineFilled]} />}
+                              <View style={[s.strengthDot, (isActive || isDone) && s.strengthDotActive]}>
+                                {isDone && <FontAwesome name="check" size={7} color={Colors.bg} />}
+                              </View>
+                              {i < tiers.length - 1 && <View style={[s.strengthLine, isLineAfterFilled && s.strengthLineFilled]} />}
                             </View>
                           );
                         })}
@@ -578,11 +580,11 @@ const s = StyleSheet.create({
   strengthLine: { flex: 1, height: 2, backgroundColor: Colors.cardBorder },
   strengthLineFilled: { backgroundColor: Colors.primary },
   strengthDot: {
-    width: 12, height: 12, borderRadius: 6,
+    width: 14, height: 14, borderRadius: 7,
     borderWidth: 1.5, borderColor: Colors.textMuted,
     backgroundColor: 'transparent',
+    alignItems: 'center', justifyContent: 'center',
   },
-  strengthDotFilled: { borderColor: Colors.primary, backgroundColor: Colors.primaryDim },
   strengthDotActive: { borderColor: Colors.primary, backgroundColor: Colors.primary },
   // Labels row below track
   strengthLabelsRow: { flexDirection: 'row' },
