@@ -9,6 +9,22 @@ import { getFormTip, FormTip } from '@/utils/formTips';
 import FormTipsModal from '@/components/FormTipsModal';
 import Colors from '@/constants/Colors';
 
+function playBeep() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.6);
+  } catch {}
+}
+
 function confirm(title: string, message: string, onConfirm: () => void) {
   if (Platform.OS === 'web') {
     if (window.confirm(`${title}\n${message}`)) onConfirm();
@@ -44,7 +60,7 @@ export default function ActiveWorkoutScreen() {
     elapsedRef.current = setInterval(() => {
       setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
     }, 1000);
-    return () => {
+return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (elapsedRef.current) clearInterval(elapsedRef.current);
     };
@@ -54,7 +70,11 @@ export default function ActiveWorkoutScreen() {
     if (restSeconds > 0) {
       timerRef.current = setInterval(() => {
         setRestSeconds((p) => {
-          if (p <= 1) { clearInterval(timerRef.current!); return 0; }
+          if (p <= 1) {
+            clearInterval(timerRef.current!);
+            if (Platform.OS === 'web') playBeep();
+            return 0;
+          }
           return p - 1;
         });
       }, 1000);
