@@ -339,16 +339,21 @@ return () => {
             {strengthResult?.standards && (
               <View style={s.strengthCard}>
                 <Text style={s.strengthHeader}>{strengthResult.standards.unit === 'reps' ? 'BEST SET REPS' : 'STRENGTH STANDARDS (E1RM)'}</Text>
-                <View style={s.strengthRow}>
-                  {(['novice', 'intermediate', 'advanced', 'elite'] as StrengthTier[]).map((tier) => {
+                {/* Dots + connecting lines */}
+                <View style={s.strengthTrackRow}>
+                  {(['novice', 'intermediate', 'advanced', 'elite'] as StrengthTier[]).map((tier, i) => {
+                    const tiers = ['novice','intermediate','advanced','elite'];
+                    const tierIdx = tiers.indexOf(tier);
+                    const activeIdx = strengthResult.tier ? tiers.indexOf(strengthResult.tier) : -1;
                     const isActive = strengthResult.tier === tier;
-                    const isPast = strengthResult.tier !== null && (
-                      ['novice','intermediate','advanced','elite'].indexOf(strengthResult.tier) >=
-                      ['novice','intermediate','advanced','elite'].indexOf(tier)
-                    );
+                    const isFilled = activeIdx >= tierIdx;
+                    const isLineAfterFilled = activeIdx > tierIdx;
                     return (
-                      <View key={tier} style={s.strengthTierCol}>
-                        <View style={[s.strengthDot, isPast && s.strengthDotFilled, isActive && s.strengthDotActive]} />
+                      <View key={tier} style={s.strengthTrackItem}>
+                        <View style={s.strengthTrackDotRow}>
+                          {i > 0 && <View style={[s.strengthLine, isLineAfterFilled && s.strengthLineFilled]} />}
+                          <View style={[s.strengthDot, isFilled && s.strengthDotFilled, isActive && s.strengthDotActive]} />
+                        </View>
                         <Text style={[s.strengthTierLabel, isActive && s.strengthTierLabelActive]}>
                           {tier.charAt(0).toUpperCase() + tier.slice(1)}
                         </Text>
@@ -552,11 +557,14 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
-  strengthHeader: { fontSize: 9, fontWeight: '700', letterSpacing: 1, color: Colors.textMuted, marginBottom: 8 },
-  strengthRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  strengthTierCol: { alignItems: 'center', flex: 1, gap: 4 },
+  strengthHeader: { fontSize: 9, fontWeight: '700', letterSpacing: 1, color: Colors.textMuted, marginBottom: 10 },
+  strengthTrackRow: { flexDirection: 'row', alignItems: 'flex-start' },
+  strengthTrackItem: { flex: 1, alignItems: 'center', gap: 4 },
+  strengthTrackDotRow: { flexDirection: 'row', alignItems: 'center', width: '100%', justifyContent: 'center' },
+  strengthLine: { flex: 1, height: 2, backgroundColor: Colors.cardBorder },
+  strengthLineFilled: { backgroundColor: Colors.primary },
   strengthDot: {
-    width: 10, height: 10, borderRadius: 5,
+    width: 12, height: 12, borderRadius: 6,
     borderWidth: 1.5, borderColor: Colors.textMuted,
     backgroundColor: 'transparent',
   },
