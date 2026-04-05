@@ -339,32 +339,45 @@ return () => {
             {strengthResult?.standards && (
               <View style={s.strengthCard}>
                 <Text style={s.strengthHeader}>{strengthResult.standards.unit === 'reps' ? 'BEST SET REPS' : 'STRENGTH STANDARDS (E1RM)'}</Text>
-                {/* Dots + connecting lines */}
-                <View style={s.strengthTrackRow}>
-                  {(['novice', 'intermediate', 'advanced', 'elite'] as StrengthTier[]).map((tier, i) => {
-                    const tiers = ['novice','intermediate','advanced','elite'];
-                    const tierIdx = tiers.indexOf(tier);
-                    const activeIdx = strengthResult.tier ? tiers.indexOf(strengthResult.tier) : -1;
-                    const isActive = strengthResult.tier === tier;
-                    const isFilled = activeIdx >= tierIdx;
-                    // Line before this dot is green if the previous dot is also reached
-                    const isLineFilled = activeIdx >= tierIdx;
-                    return (
-                      <View key={tier} style={s.strengthTrackItem}>
-                        <View style={s.strengthTrackDotRow}>
-                          {i > 0 && <View style={[s.strengthLine, isLineFilled && s.strengthLineFilled]} />}
-                          <View style={[s.strengthDot, isFilled && s.strengthDotFilled, isActive && s.strengthDotActive]} />
-                        </View>
-                        <Text style={[s.strengthTierLabel, isActive && s.strengthTierLabelActive]}>
-                          {tier.charAt(0).toUpperCase() + tier.slice(1)}
-                        </Text>
-                        <Text style={s.strengthTierVal}>
-                          {strengthResult.standards[tier as keyof typeof strengthResult.standards]}{strengthResult.standards.unit === 'reps' ? 'r' : 'kg'}
-                        </Text>
+                {/* Track row: lines + dots in a single flex row */}
+                {(() => {
+                  const tiers = ['novice','intermediate','advanced','elite'] as StrengthTier[];
+                  const activeIdx = strengthResult.tier ? tiers.indexOf(strengthResult.tier) : -1;
+                  return (
+                    <>
+                      <View style={s.strengthTrackRow}>
+                        {tiers.map((tier, i) => {
+                          const tierIdx = i;
+                          const isFilled = activeIdx >= tierIdx;
+                          const isActive = strengthResult.tier === tier;
+                          const isLineFilled = activeIdx >= tierIdx;
+                          return (
+                            <View key={tier} style={s.strengthTrackItem}>
+                              {i > 0 && <View style={[s.strengthLine, isLineFilled && s.strengthLineFilled]} />}
+                              <View style={[s.strengthDot, isFilled && s.strengthDotFilled, isActive && s.strengthDotActive]} />
+                              {i < tiers.length - 1 && <View style={[s.strengthLine, (activeIdx > tierIdx) && s.strengthLineFilled]} />}
+                            </View>
+                          );
+                        })}
                       </View>
-                    );
-                  })}
-                </View>
+                      <View style={s.strengthLabelsRow}>
+                        {tiers.map((tier) => {
+                          const isActive = strengthResult.tier === tier;
+                          return (
+                            <View key={tier} style={s.strengthLabelCol}>
+                              <Text style={[s.strengthTierLabel, isActive && s.strengthTierLabelActive]}>
+                                {tier.charAt(0).toUpperCase() + tier.slice(1)}
+                              </Text>
+                              <Text style={s.strengthTierVal}>
+                                {strengthResult.standards![tier as keyof typeof strengthResult.standards]}{strengthResult.standards!.unit === 'reps' ? 'r' : 'kg'}
+                              </Text>
+                            </View>
+                          );
+                        })}
+                      </View>
+                    </>
+                  );
+                })()}
               </View>
             )}
 
@@ -558,10 +571,10 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
-  strengthHeader: { fontSize: 9, fontWeight: '700', letterSpacing: 1, color: Colors.textMuted, marginBottom: 10 },
-  strengthTrackRow: { flexDirection: 'row', alignItems: 'flex-start' },
-  strengthTrackItem: { flex: 1, alignItems: 'center', gap: 4 },
-  strengthTrackDotRow: { flexDirection: 'row', alignItems: 'center', width: '100%', justifyContent: 'center' },
+  strengthHeader: { fontSize: 9, fontWeight: '700', letterSpacing: 1, color: Colors.textMuted, marginBottom: 12 },
+  // Track: each item is [line?][dot][line?] all in one row
+  strengthTrackRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  strengthTrackItem: { flex: 1, flexDirection: 'row', alignItems: 'center' },
   strengthLine: { flex: 1, height: 2, backgroundColor: Colors.cardBorder },
   strengthLineFilled: { backgroundColor: Colors.primary },
   strengthDot: {
@@ -571,6 +584,9 @@ const s = StyleSheet.create({
   },
   strengthDotFilled: { borderColor: Colors.primary, backgroundColor: Colors.primaryDim },
   strengthDotActive: { borderColor: Colors.primary, backgroundColor: Colors.primary },
+  // Labels row below track
+  strengthLabelsRow: { flexDirection: 'row' },
+  strengthLabelCol: { flex: 1, alignItems: 'center', gap: 2 },
   strengthTierLabel: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5, color: Colors.textMuted },
   strengthTierLabelActive: { color: Colors.primary },
   strengthTierVal: { fontSize: 11, fontWeight: '600', color: Colors.textSecondary },
