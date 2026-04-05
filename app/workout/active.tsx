@@ -223,8 +223,16 @@ return () => {
     ? currentEx.sets.reduce((sum, set) => sum + set.reps, 0)
     : 0;
 
+  const currentBest = currentEx
+    ? currentEx.sets.reduce((best, set) => {
+        const val = currentEx.bodyweight
+          ? set.reps
+          : set.reps > 1 ? set.weight * (1 + set.reps / 30) : set.weight;
+        return val > best ? val : best;
+      }, 0)
+    : 0;
   const strengthResult = currentEx
-    ? getStrengthTier(currentEx.name, profileWeight, bestMap[currentEx.exerciseId] ?? 0)
+    ? getStrengthTier(currentEx.name, profileWeight, Math.max(bestMap[currentEx.exerciseId] ?? 0, currentBest))
     : null;
 
   // Exercise picker overlay
