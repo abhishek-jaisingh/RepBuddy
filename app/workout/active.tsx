@@ -367,15 +367,27 @@ return () => {
               <View style={s.lastWorkoutCard}>
                 <View style={s.lastWorkoutHeader}>
                   <Text style={s.lastWorkoutLabel}>LAST TIME</Text>
-                  {currentEx.bodyweight ? (
-                    <Text style={s.lastWorkoutSummary}>
-                      {lastSetsMap[currentEx.exerciseId].reduce((sum, set) => sum + set.reps, 0)} reps
-                    </Text>
-                  ) : (
-                    <Text style={s.lastWorkoutSummary}>
-                      {lastSetsMap[currentEx.exerciseId].reduce((sum, set) => sum + totalVolume(set.weight, set.reps), 0).toLocaleString()} kg
-                    </Text>
-                  )}
+                  <View style={{ alignItems: 'flex-end', gap: 2 }}>
+                    {currentEx.bodyweight ? (
+                      <>
+                        <Text style={s.lastWorkoutSummary}>
+                          {lastSetsMap[currentEx.exerciseId].reduce((sum, set) => sum + set.reps, 0)} reps
+                        </Text>
+                        <Text style={s.lastWorkoutE1rm}>
+                          Best set: {Math.max(...lastSetsMap[currentEx.exerciseId].map(s => s.reps))} reps
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <Text style={s.lastWorkoutSummary}>
+                          {lastSetsMap[currentEx.exerciseId].reduce((sum, set) => sum + totalVolume(set.weight, set.reps), 0).toLocaleString()} kg
+                        </Text>
+                        <Text style={s.lastWorkoutE1rm}>
+                          E1RM: {Math.round(Math.max(...lastSetsMap[currentEx.exerciseId].map(s => s.reps > 1 ? s.weight * (1 + s.reps / 30) : s.weight)))}kg
+                        </Text>
+                      </>
+                    )}
+                  </View>
                 </View>
                 <Text style={s.lastWorkoutSets}>
                   {lastSetsMap[currentEx.exerciseId].map((set, i) =>
@@ -575,6 +587,9 @@ const s = StyleSheet.create({
   },
   lastWorkoutSets: {
     fontSize: 13, fontWeight: '600', color: Colors.text,
+  },
+  lastWorkoutE1rm: {
+    fontSize: 11, fontWeight: '600', color: Colors.textMuted,
   },
 
   // Set table
