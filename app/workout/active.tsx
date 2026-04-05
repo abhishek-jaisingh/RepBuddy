@@ -9,10 +9,8 @@ import { getFormTip, FormTip } from '@/utils/formTips';
 import FormTipsModal from '@/components/FormTipsModal';
 import Colors from '@/constants/Colors';
 
-function playBeep() {
+function playBeepOn(ctx: AudioContext) {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    const ctx = new AudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -53,6 +51,7 @@ export default function ActiveWorkoutScreen() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(Date.now());
   const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     startTimeRef.current = Date.now();
@@ -72,7 +71,7 @@ return () => {
         setRestSeconds((p) => {
           if (p <= 1) {
             clearInterval(timerRef.current!);
-            if (Platform.OS === 'web') playBeep();
+            if (Platform.OS === 'web' && audioCtxRef.current) playBeepOn(audioCtxRef.current);
             return 0;
           }
           return p - 1;
@@ -374,8 +373,15 @@ return () => {
             {/* Rest Timer Buttons */}
             <Text style={s.restLabel}>REST TIMER</Text>
             <View style={s.timerButtons}>
-              {[60, 90, 120].map((sec) => (
-                <TouchableOpacity key={sec} style={s.timerBtn} onPress={() => setRestSeconds(sec)}>
+              {[30, 60, 90].map((sec) => (
+                <TouchableOpacity key={sec} style={s.timerBtn} onPress={() => {
+                  if (Platform.OS === 'web') {
+                    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+                    if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx();
+                    else if (audioCtxRef.current.state === 'suspended') audioCtxRef.current.resume();
+                  }
+                  setRestSeconds(sec);
+                }}>
                   <FontAwesome name="clock-o" size={12} color={Colors.primary} />
                   <Text style={s.timerBtnText}>{sec}s</Text>
                 </TouchableOpacity>
