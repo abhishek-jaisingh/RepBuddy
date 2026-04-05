@@ -110,9 +110,11 @@ return () => {
         if (!(ex.exerciseId in lastSets) && ex.sets.length > 0) {
           lastSets[ex.exerciseId] = ex.sets;
         }
-        // Best weight or best reps (for bodyweight)
+        // Best estimated 1RM (Epley) or best reps (for bodyweight)
         for (const set of ex.sets) {
-          const val = ex.bodyweight ? set.reps : set.weight;
+          const val = ex.bodyweight
+            ? set.reps
+            : set.reps > 1 ? set.weight * (1 + set.reps / 30) : set.weight;
           if (val > (best[ex.exerciseId] ?? 0)) best[ex.exerciseId] = val;
         }
       }
@@ -328,6 +330,7 @@ return () => {
             {/* Strength Standard */}
             {strengthResult?.standards && (
               <View style={s.strengthCard}>
+                <Text style={s.strengthHeader}>{strengthResult.standards.unit === 'reps' ? 'BEST SET REPS' : 'STRENGTH STANDARDS (E1RM)'}</Text>
                 <View style={s.strengthRow}>
                   {(['novice', 'intermediate', 'advanced', 'elite'] as StrengthTier[]).map((tier) => {
                     const isActive = strengthResult.tier === tier;
@@ -529,6 +532,7 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
+  strengthHeader: { fontSize: 9, fontWeight: '700', letterSpacing: 1, color: Colors.textMuted, marginBottom: 8 },
   strengthRow: { flexDirection: 'row', justifyContent: 'space-between' },
   strengthTierCol: { alignItems: 'center', flex: 1, gap: 4 },
   strengthDot: {
