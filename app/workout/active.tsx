@@ -107,7 +107,8 @@ return () => {
           const lastSet = ex.sets[ex.sets.length - 1];
           if (lastSet && lastSet.weight > 0) lastWeightMap[ex.exerciseId] = lastSet.weight;
         }
-        if (!(ex.exerciseId in lastSets) && ex.sets.length > 0) {
+        const hasRealSets = ex.sets.some((set) => set.weight > 0 || set.reps > 0);
+        if (!(ex.exerciseId in lastSets) && hasRealSets) {
           lastSets[ex.exerciseId] = ex.sets;
         }
         // Best estimated 1RM (Epley) or best reps (for bodyweight)
